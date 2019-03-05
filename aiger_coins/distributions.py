@@ -28,7 +28,7 @@ def coin(prob, input_name=None):
 
 def mutex_coins(name2prob, input_name=None, keep_seperate=False):
     """Mutually exclusive coins.
-    
+
     Encoded using the common denominator method.
     """
     name2prob = fn.walk_values(to_frac, name2prob)

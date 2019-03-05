@@ -32,5 +32,5 @@ def test_mutex_coins(weights):
     neq0 = aiger.or_gate(mux.outputs)
     is_odd = aiger.parity_gate(mux.outputs)
     for gate in [neq0, is_odd]:
-        prob  = Fraction(count(mux >> gate) , bot)
+        prob = Fraction(count(mux >> gate), bot)
         assert prob == 1
