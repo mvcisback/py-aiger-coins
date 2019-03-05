@@ -61,5 +61,5 @@ one can simply feed it into a circuit that performs that test!
 
 ```
 test = aiger.or_gate(['x', 'y']) | aiger.sink(['z'])
-assert Fraction(count(circ >> mux), count(bot)) == Fraction(2, 3)
+assert Fraction(count(circ >> test), count(bot)) == Fraction(2, 3)
 ```
