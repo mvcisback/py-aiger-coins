@@ -1,7 +1,9 @@
 from setuptools import find_packages
 from distutils.core import setup
 
-DESC = 'Library for creating circuits that encode discrete distributions. The name comes from the random bit model of drawing from discrete distributions using coin flips.'
+DESC = 'Library for creating circuits that encode discrete'
+'distributions. The name comes from the random bit model of drawing'
+'from discrete distributions using coin flips.'
 
 setup(
     name='py-aiger-coins',
