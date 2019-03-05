@@ -52,7 +52,7 @@ example, a three sided dice can be encoded with:
 
 ```
 circ, bot = aiger_coins.mutex_coins(
-    {'x': prob, 'y': prob, 'z': prob}
+    {'x': (1, 6), 'y': (3, 6), 'z': (1, 6)}
 )
 ```
 
