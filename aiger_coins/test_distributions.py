@@ -8,7 +8,7 @@ from aiger_bdd import count
 from aiger_coins import coin, mutex_coins
 
 
-@settings(max_examples=4, deadline=400)
+@settings(max_examples=4, deadline=None)
 @given(st.integers(0, 7), st.integers(1, 7))
 def test_biased_coin(k, m):
     f = Fraction(*sorted([k, m]))
@@ -19,7 +19,7 @@ def test_biased_coin(k, m):
         assert f == f2
 
 
-@settings(max_examples=4, deadline=400)
+@settings(max_examples=4, deadline=None)
 @given(st.lists(st.integers(1, 5), min_size=2, max_size=10))
 def test_mutex_coins(weights):
     denom = sum(weights)
