@@ -9,19 +9,9 @@ from aigerbv import atom
 from aiger_coins import utils
 
 
-def _kmodels(var, k, max_val):
-    return ~(var ^ var) if k == max_val else var < k
-
-
-def to_frac(prob):
-    prob = Fraction(*prob) if isinstance(prob, tuple) else Fraction(prob)
-    assert 0 <= prob <= 1
-    return prob
-
-
 def coin(prob, input_name=None):
     # TODO: reimplement in terms of common_denominator_method.
-    prob = to_frac(prob)
+    prob = utils.to_frac(prob)
     mux, is_valid = mutex_coins({'H': prob, 'T': 1 - prob})
     return mux >> aiger.sink('T'), is_valid
 
@@ -31,7 +21,7 @@ def mutex_coins(name2prob, input_name=None, keep_seperate=False):
 
     Encoded using the common denominator method.
     """
-    name2prob = fn.walk_values(to_frac, name2prob)
+    name2prob = fn.walk_values(utils.to_frac, name2prob)
     assert sum(name2prob.values()) == 1
 
     bots = [p.denominator for p in name2prob.values()]
@@ -60,3 +50,7 @@ def mutex_coins(name2prob, input_name=None, keep_seperate=False):
     if keep_seperate:
         return coins, is_valid
     return reduce(lambda x, y: x | y, coins), is_valid
+
+
+def binomial(n):
+    return utils.chain(2*n+1).aig.unroll(only_last_outputs=True)
