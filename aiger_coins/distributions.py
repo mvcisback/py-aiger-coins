@@ -1,5 +1,4 @@
 import math
-from fractions import Fraction
 from functools import reduce
 
 import aiger

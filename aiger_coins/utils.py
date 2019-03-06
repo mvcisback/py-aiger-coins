@@ -19,7 +19,7 @@ def chain(n):
 
     x2 = ite(forward, x << 1, x >> 1)
     return x2.aigbv['o', {x2.output: 'x'}].feedback(
-        inputs=['x'], outputs=['x'], 
+        inputs=['x'], outputs=['x'],
         initials=[x0], keep_outputs=True
     )
 
