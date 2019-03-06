@@ -51,9 +51,9 @@ def mutex_coins(name2prob, input_name=None, keep_seperate=False):
     return reduce(lambda x, y: x | y, coins), is_valid
 
 
-def binomial(n):
-    bits = math.ceil(math.log2(n + 1))
-    circ = utils.chain(bits).unroll(n, only_last_outputs=True)
+def binomial(n, use_1hot=False):
+    circ = utils.chain(n, use_1hot).unroll(n, only_last_outputs=True)
+
     # PROBLEM: aigbv.unroll currently doesn't preserve variable
     #          order.
     # WORK AROUND: Sort input and output maps
@@ -65,7 +65,7 @@ def binomial(n):
 
     def fix_order(mapping):
         return frozenset(fn.walk_values(_fix_order, dict(mapping)).items())
-
     imap, omap = fix_order(circ.input_map), fix_order(circ.output_map)
     circ = attr.evolve(circ, input_map=imap, output_map=omap)
+
     return UnsignedBVExpr(circ)

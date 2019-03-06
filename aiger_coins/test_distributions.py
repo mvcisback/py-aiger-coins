@@ -5,7 +5,7 @@ from hypothesis import given, settings
 import aiger
 from aiger_bdd import count
 
-from aiger_coins import coin, mutex_coins
+from aiger_coins import binomial, coin, mutex_coins
 
 
 @settings(max_examples=4, deadline=None)
@@ -34,3 +34,11 @@ def test_mutex_coins(weights):
     for gate in [neq0, is_odd]:
         prob = Fraction(count(mux >> gate), bot)
         assert prob == 1
+
+
+def test_binomial():
+    x = binomial(6, use_1hot=False)
+    y = binomial(6, use_1hot=True)
+    for i, v in enumerate([1, 6, 15, 20, 15, 6, 1]):
+        assert v == count(x == i)
+        assert v == count(y == (1 << i))
