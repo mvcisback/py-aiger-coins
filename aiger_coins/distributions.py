@@ -3,7 +3,7 @@ from functools import reduce
 
 import aiger
 import funcy as fn
-from aigerbv import atom
+from aigerbv import atom, UnsignedBVExpr
 
 from aiger_coins import utils
 
@@ -52,4 +52,20 @@ def mutex_coins(name2prob, input_name=None, keep_seperate=False):
 
 
 def binomial(n):
-    return utils.chain(2*n+1).aig.unroll(only_last_outputs=True)
+    bits = math.ceil(math.log2(n + 1))
+    circ = utils.chain(bits).unroll(n, only_last_outputs=True)
+    # PROBLEM: aigbv.unroll currently doesn't preserve variable
+    #          order.
+    # WORK AROUND: Sort input and output maps
+    # TODO: Remove when fixed!
+    import attr
+
+    def _fix_order(names):
+        return tuple(sorted(names))
+
+    def fix_order(mapping):
+        return frozenset(fn.walk_values(_fix_order, dict(mapping)).items())
+
+    imap, omap = fix_order(circ.input_map), fix_order(circ.output_map)
+    circ = attr.evolve(circ, input_map=imap, output_map=omap)
+    return UnsignedBVExpr(circ)

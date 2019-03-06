@@ -13,14 +13,13 @@ def lcm(a, b):
 
 # Simplification of py-aiger-gridworld's chain.
 def chain(n):
-    x0 = 1 << (n // 2)
     x = atom(n, 'x', signed=False)
-    forward = atom(1, 'forward', signed=False)
+    forward = atom(1, 'H', signed=False)
 
-    x2 = ite(forward, x << 1, x >> 1)
+    x2 = ite(forward, x + 1, x)
     return x2.aigbv['o', {x2.output: 'x'}].feedback(
         inputs=['x'], outputs=['x'],
-        initials=[x0], keep_outputs=True
+        initials=[0], keep_outputs=True, signed=False
     )
 
 
