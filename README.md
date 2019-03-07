@@ -27,6 +27,8 @@ should automatically be installed with `py-aiger-coins` and
 
 `$ pip install py-aiger-bdd`
 
+## Biased Coins
+
 We start by encoding a biased coin and computing its
 bias. The coin will be encoded as two circuits
 `top` and `bot` such that `bias = #top / #bot`, where `#`
@@ -45,12 +47,14 @@ top, bot = aiger_coins.coin((1, 3))  # or just use a tuple.
 assert Fraction(count(top), count(bot)) == prob
 ```
 
-Next, we illustrate how to create a set of mutually exclusive coins
+## Distributions on discrete sets
+
+We now illustrate how to create a set of mutually exclusive coins
 that represent distribution over a finite set. Namely, coordinate
 `i` is `1` iff the `i`th element of the set is drawn. For
 example, a three sided dice can be encoded with:
 
-```
+```python
 circ, bot = aiger_coins.mutex_coins(
     {'x': (1, 6), 'y': (3, 6), 'z': (2, 6)}
 )
@@ -59,7 +63,21 @@ circ, bot = aiger_coins.mutex_coins(
 Now to ask what the probability of drawing `x` or `y` is,
 one can simply feed it into a circuit that performs that test!
 
-```
+```python
 test = aiger.or_gate(['x', 'y']) | aiger.sink(['z'])
 assert Fraction(count(circ >> test), count(bot)) == Fraction(2, 3)
 ```
+
+## Binomial Distributions
+
+`py-aiger-coins` also supports encoding Binomial distributions. There are two options for encoding, 1-hot encoding which is a format similar to that in the discrete sets section and as an unsigned integers. The following snippet shows how the counts correspond to entries in Pascal's triangle.
+
+```python
+x = binomial(6, use_1hot=False)
+y = binomial(6, use_1hot=True)
+for i, v in enumerate([1, 6, 15, 20, 15, 6, 1]):
+    assert v == count(x == i)
+    assert v == count(y == (1 << i))
+```
+
+Dividing by `2**n` (64 in the example above) results in the probabilities of a Bionomial Distribution.
