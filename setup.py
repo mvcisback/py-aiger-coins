@@ -7,7 +7,7 @@ DESC = 'Library for creating circuits that encode discrete'
 
 setup(
     name='py-aiger-coins',
-    version='0.0.0',
+    version='0.0.1',
     description=DESC,
     url='http://github.com/mvcisback/py-aiger-coins',
     author='Marcell Vazquez-Chanlatte',
