@@ -61,7 +61,11 @@ def binomial(n, use_1hot=False):
     import attr
 
     def _fix_order(names):
-        return tuple(sorted(names))
+        def to_key(x):
+            name, time = x.split('##time_')
+            return int(time), name
+
+        return tuple(sorted(names, key=to_key))
 
     def fix_order(mapping):
         return frozenset(fn.walk_values(_fix_order, dict(mapping)).items())
