@@ -1,0 +1,25 @@
+[tool.poetry]
+name = "py-aiger-coins"
+version = "0.1.0"
+description = "Library for creating circuits that encode discrete distributions."
+authors = ["Marcell Vazquez-Chanlatte <mvc@linux.com>"]
+repository = "https://github.com/mvcisback/py-aiger-coins"
+readme="README.md"
+license = "MIT"
+packages = [
+    { include = "aiger_coins"},
+]
+
+[tool.poetry.dependencies]
+python = "^3.6"
+attrs = "^19.3"
+py-aiger = "^3.5"
+py-aiger-bv = "^1.0.2"
+funcy = "^1.13"
+
+[tool.poetry.dev-dependencies]
+py-aiger-bdd = "^0.2.3"
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"

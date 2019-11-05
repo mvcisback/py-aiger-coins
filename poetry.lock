@@ -1,0 +1,211 @@
+[[package]]
+category = "dev"
+description = "Utilities for abstract syntax trees and parsing with PLY."
+name = "astutils"
+optional = false
+python-versions = "*"
+version = "0.0.3"
+
+[package.dependencies]
+ply = ">=3.4"
+
+[[package]]
+category = "main"
+description = "Classes Without Boilerplate"
+name = "attrs"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
+version = "19.3.0"
+
+[[package]]
+category = "main"
+description = "Efficient, Pythonic bidirectional map implementation and related functionality"
+name = "bidict"
+optional = false
+python-versions = "*"
+version = "0.18.3"
+
+[[package]]
+category = "dev"
+description = "Binary decision diagrams implemented in pure Python, as well as Cython wrappers of CUDD, Sylvan, and BuDDy."
+name = "dd"
+optional = false
+python-versions = "*"
+version = "0.5.4"
+
+[package.dependencies]
+astutils = ">=0.0.1"
+networkx = ">=1.9.1"
+ply = ">=3.4,<=3.10"
+psutil = ">=3.2.2"
+pydot = ">=1.2.2"
+setuptools = ">=19.6"
+
+[[package]]
+category = "dev"
+description = "Decorators for Humans"
+name = "decorator"
+optional = false
+python-versions = ">=2.6, !=3.0.*, !=3.1.*"
+version = "4.4.1"
+
+[[package]]
+category = "main"
+description = "A fancy and practical functional tools"
+name = "funcy"
+optional = false
+python-versions = "*"
+version = "1.13"
+
+[[package]]
+category = "dev"
+description = "Python package for creating and manipulating graphs and networks"
+name = "networkx"
+optional = false
+python-versions = ">=3.5"
+version = "2.4"
+
+[package.dependencies]
+decorator = ">=4.3.0"
+
+[[package]]
+category = "main"
+description = "(Soon to be) the fastest pure-Python PEG parser I could muster"
+name = "parsimonious"
+optional = false
+python-versions = "*"
+version = "0.8.1"
+
+[package.dependencies]
+six = ">=1.9.0"
+
+[[package]]
+category = "dev"
+description = "Python Lex & Yacc"
+name = "ply"
+optional = false
+python-versions = "*"
+version = "3.10"
+
+[[package]]
+category = "dev"
+description = "Cross-platform lib for process and system monitoring in Python."
+name = "psutil"
+optional = false
+python-versions = ">=2.6, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
+version = "5.6.4"
+
+[[package]]
+category = "main"
+description = "A python library for manipulating sequential and-inverter gates."
+name = "py-aiger"
+optional = false
+python-versions = ">=3.6,<4.0"
+version = "3.5.0"
+
+[package.dependencies]
+attrs = ">=19.3,<20.0"
+bidict = ">=0.18.0,<0.19.0"
+funcy = ">=1.12,<2.0"
+parsimonious = ">=0.8.1,<0.9.0"
+pyrsistent = ">=0.15.4,<0.16.0"
+toposort = ">=1.5,<2.0"
+
+[[package]]
+category = "dev"
+description = "Aiger to BDD bridge."
+name = "py-aiger-bdd"
+optional = false
+python-versions = ">=3.6,<4.0"
+version = "0.2.3"
+
+[package.dependencies]
+attrs = ">=19.3,<20.0"
+bidict = ">=0.18.0,<0.19.0"
+dd = ">=0.5.4,<0.6.0"
+funcy = ">=1.12,<2.0"
+py-aiger = ">=3.5.0,<4.0.0"
+
+[[package]]
+category = "main"
+description = "A python library for manipulating sequential and-inverter gates."
+name = "py-aiger-bv"
+optional = false
+python-versions = ">=3.6,<4.0"
+version = "1.0.2"
+
+[package.dependencies]
+attrs = ">=19.1,<20.0"
+funcy = ">=1.12,<2.0"
+py-aiger = ">=3.3.5,<4.0.0"
+pyrsistent = ">=0.15.4,<0.16.0"
+
+[[package]]
+category = "dev"
+description = "Python interface to Graphviz's Dot"
+name = "pydot"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
+version = "1.4.1"
+
+[package.dependencies]
+pyparsing = ">=2.1.4"
+
+[[package]]
+category = "dev"
+description = "Python parsing module"
+name = "pyparsing"
+optional = false
+python-versions = ">=2.6, !=3.0.*, !=3.1.*, !=3.2.*"
+version = "2.4.3"
+
+[[package]]
+category = "main"
+description = "Persistent/Functional/Immutable data structures"
+name = "pyrsistent"
+optional = false
+python-versions = "*"
+version = "0.15.5"
+
+[package.dependencies]
+six = "*"
+
+[[package]]
+category = "main"
+description = "Python 2 and 3 compatibility utilities"
+name = "six"
+optional = false
+python-versions = ">=2.6, !=3.0.*, !=3.1.*"
+version = "1.12.0"
+
+[[package]]
+category = "main"
+description = "Implements a topological sort algorithm."
+name = "toposort"
+optional = false
+python-versions = "*"
+version = "1.5"
+
+[metadata]
+content-hash = "239cb6e73eab6fbc9e7ebb370a589f568b9a301c1d653d501dd9cb99b62aaa40"
+python-versions = "^3.6"
+
+[metadata.hashes]
+astutils = ["3f5c9a4a70eaf848e05a7234c914c9dbc965a8c3ae807f0fdb1ea804f1b8c0c4"]
+attrs = ["08a96c641c3a74e44eb59afb61a24f2cb9f4d7188748e76ba4bb5edfa3cb7d1c", "f7b7ce16570fe9965acd6d30101a28f62fb4a7f9e926b3bbc9b61f8b04247e72"]
+bidict = ["1742a25a9ef1b1ac4000683406879a3e1a6577faa02f31e482e6c84e2e3bf628", "621db384daef94b7031897ca479f4feed025989a64e91c6fae88fb88a842488c"]
+dd = ["39c3d7fdebad4c128d3444fcfaf8491c96b2ef5a1c0baa33f4b7eef81115810c"]
+decorator = ["54c38050039232e1db4ad7375cfce6748d7b41c29e95a081c8a6d2c30364a2ce", "5d19b92a3c8f7f101c8dd86afd86b0f061a8ce4540ab8cd401fa2542756bce6d"]
+funcy = ["141950038e72bdc2d56fa82468586a1d1291b9cc9346daaaa322dffed1d1da6e", "918f333f675d9841ec7d77b9f0d5a272ed290393a33c8ef20e605847de89b1c3"]
+networkx = ["cdfbf698749a5014bf2ed9db4a07a5295df1d3a53bf80bf3cbd61edf9df05fa1", "f8f4ff0b6f96e4f9b16af6b84622597b5334bf9cae8cf9b2e42e7985d5c95c64"]
+parsimonious = ["3add338892d580e0cb3b1a39e4a1b427ff9f687858fdd61097053742391a9f6b"]
+ply = ["96e94af7dd7031d8d6dd6e2a8e0de593b511c211a86e28a9c9621c275ac8bacb"]
+psutil = ["0ff1f630ee0df7c048ef53e50196437d2c9cebab8ccca0e3078d9300c4b7da47", "10175ea15b7e4a1bf1a0863da7e17042862b3ea3e7d24285c96fa4cc65ab9788", "41d645f100c6b4c995ff342ef7d79a936f3f48e9a816d7d655c69b352460341d", "43f0d7536a98c20a538242ce2bd8c64dbc1f6c396e97f2bdceb496d7583b9b80", "4f637dd25d3bce4879d0b4032d13f4120ba18ed2d028e85d911d429f447c251c", "512e77ac987105e2d7aa2386d9f260434ad8b71e41484f8d84bfecd4ae3764ca", "512e854d68f8b42f79b2c7864d997b39125baff9bcff00028ce43543867de7c4", "75d50d1138b2476a11dca33ab1ad2b78707d428418b581966ccedac768358f72", "f0ec1a3ea56503f4facc1dca364cf3dd66dc39169c4603000d3d34270e05fbb3", "f6b66a5663700b71bac3d8ecf6533a1550a679823e63b2c92dc4c3c8c244c52e", "fb58e87c29ec0fb99937b95c5d473bb786d263aaa767d017a6bd4ad52d694e79"]
+py-aiger = ["cdeb57410177d360e305ab4a444c010bdc9f9ed7202f244d66214e0cb214e272", "f0263316997d24e90b8e0b368b6bbea22f917d4c44275e1bfecd7974f394e40f"]
+py-aiger-bdd = ["13475f2a7b36afc3fbbcf4c5e040dacb5312821ad32c2c768e0a60d97428f333", "af2f1b1927c158d7bd458d3de5c2e1e9a30c936c4b887337f8958bdf06113d1d"]
+py-aiger-bv = ["a2260efa75067ee10a6b095bdecb6f8c805160acfb10579d770709a2e21d66bd", "ecb20fff93b2ef7469e5963eb7d26e297335515b6db3fab812cad7b51fcbce72"]
+pydot = ["67be714300c78fda5fd52f79ec994039e3f76f074948c67b5ff539b433ad354f", "d49c9d4dd1913beec2a997f831543c8cbd53e535b1a739e921642fe416235f01"]
+pyparsing = ["0961bf3429691b9cd7e3695a37ee8bc18e95c56ac1271dc2bbc41697062d1b6d", "8997c62f779045b07273e124bbe1d03e2eebb9a38a7ef0798fea4bae72b4b6a3"]
+pyrsistent = ["eb6545dbeb1aa69ab1fb4809bfbf5a8705e44d92ef8fc7c2361682a47c46c778"]
+six = ["3350809f0555b11f552448330d0b52d5f24c91a322ea4a15ef22629740f3761c", "d16a0141ec1a18405cd4ce8b4613101da75da0e9a7aec5bdd4fa804d0e0eba73"]
+toposort = ["d80128b83b411d503b0cdb4a8f172998bc1d3b434b6402a349b8ebd734d51a80", "dba5ae845296e3bf37b042c640870ffebcdeb8cd4df45adaa01d8c5476c557dd"]

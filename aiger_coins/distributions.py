@@ -3,7 +3,7 @@ from functools import reduce
 
 import aiger
 import funcy as fn
-from aigerbv import atom, UnsignedBVExpr
+from aiger_bv import atom, UnsignedBVExpr
 
 from aiger_coins import utils
 

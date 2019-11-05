@@ -1,7 +1,7 @@
 import math
 from fractions import Fraction
 
-from aigerbv import atom, ite
+from aiger_bv import atom, ite
 
 
 # Python is deprecating fractions.gcd....
