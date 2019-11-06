@@ -132,12 +132,12 @@ description = "A python library for manipulating sequential and-inverter gates."
 name = "py-aiger-bv"
 optional = false
 python-versions = ">=3.6,<4.0"
-version = "1.0.2"
+version = "1.0.6"
 
 [package.dependencies]
 attrs = ">=19.1,<20.0"
 funcy = ">=1.12,<2.0"
-py-aiger = ">=3.3.5,<4.0.0"
+py-aiger = ">=3.5,<4.0"
 pyrsistent = ">=0.15.4,<0.16.0"
 
 [[package]]
@@ -157,7 +157,7 @@ description = "Python parsing module"
 name = "pyparsing"
 optional = false
 python-versions = ">=2.6, !=3.0.*, !=3.1.*, !=3.2.*"
-version = "2.4.3"
+version = "2.4.4"
 
 [[package]]
 category = "main"
@@ -176,7 +176,7 @@ description = "Python 2 and 3 compatibility utilities"
 name = "six"
 optional = false
 python-versions = ">=2.6, !=3.0.*, !=3.1.*"
-version = "1.12.0"
+version = "1.13.0"
 
 [[package]]
 category = "main"
@@ -187,7 +187,7 @@ python-versions = "*"
 version = "1.5"
 
 [metadata]
-content-hash = "239cb6e73eab6fbc9e7ebb370a589f568b9a301c1d653d501dd9cb99b62aaa40"
+content-hash = "7aefcc50687c5ca081ae9e1f40fbe4fc7911541052cd244e0c1dd77f1bd31b17"
 python-versions = "^3.6"
 
 [metadata.hashes]
@@ -203,9 +203,9 @@ ply = ["96e94af7dd7031d8d6dd6e2a8e0de593b511c211a86e28a9c9621c275ac8bacb"]
 psutil = ["0ff1f630ee0df7c048ef53e50196437d2c9cebab8ccca0e3078d9300c4b7da47", "10175ea15b7e4a1bf1a0863da7e17042862b3ea3e7d24285c96fa4cc65ab9788", "41d645f100c6b4c995ff342ef7d79a936f3f48e9a816d7d655c69b352460341d", "43f0d7536a98c20a538242ce2bd8c64dbc1f6c396e97f2bdceb496d7583b9b80", "4f637dd25d3bce4879d0b4032d13f4120ba18ed2d028e85d911d429f447c251c", "512e77ac987105e2d7aa2386d9f260434ad8b71e41484f8d84bfecd4ae3764ca", "512e854d68f8b42f79b2c7864d997b39125baff9bcff00028ce43543867de7c4", "75d50d1138b2476a11dca33ab1ad2b78707d428418b581966ccedac768358f72", "f0ec1a3ea56503f4facc1dca364cf3dd66dc39169c4603000d3d34270e05fbb3", "f6b66a5663700b71bac3d8ecf6533a1550a679823e63b2c92dc4c3c8c244c52e", "fb58e87c29ec0fb99937b95c5d473bb786d263aaa767d017a6bd4ad52d694e79"]
 py-aiger = ["cdeb57410177d360e305ab4a444c010bdc9f9ed7202f244d66214e0cb214e272", "f0263316997d24e90b8e0b368b6bbea22f917d4c44275e1bfecd7974f394e40f"]
 py-aiger-bdd = ["13475f2a7b36afc3fbbcf4c5e040dacb5312821ad32c2c768e0a60d97428f333", "af2f1b1927c158d7bd458d3de5c2e1e9a30c936c4b887337f8958bdf06113d1d"]
-py-aiger-bv = ["a2260efa75067ee10a6b095bdecb6f8c805160acfb10579d770709a2e21d66bd", "ecb20fff93b2ef7469e5963eb7d26e297335515b6db3fab812cad7b51fcbce72"]
+py-aiger-bv = ["73c256b68c9d45d34226f65dabfd6f3e66aaa7e91458c249e8530e3529d2d4d4", "bd2e6fef4f7c1326d029620a367aa2e755422ad06c11348fc8fe50b24a6ae70a"]
 pydot = ["67be714300c78fda5fd52f79ec994039e3f76f074948c67b5ff539b433ad354f", "d49c9d4dd1913beec2a997f831543c8cbd53e535b1a739e921642fe416235f01"]
-pyparsing = ["0961bf3429691b9cd7e3695a37ee8bc18e95c56ac1271dc2bbc41697062d1b6d", "8997c62f779045b07273e124bbe1d03e2eebb9a38a7ef0798fea4bae72b4b6a3"]
+pyparsing = ["4acadc9a2b96c19fe00932a38ca63e601180c39a189a696abce1eaab641447e1", "61b5ed888beab19ddccab3478910e2076a6b5a0295dffc43021890e136edf764"]
 pyrsistent = ["eb6545dbeb1aa69ab1fb4809bfbf5a8705e44d92ef8fc7c2361682a47c46c778"]
-six = ["3350809f0555b11f552448330d0b52d5f24c91a322ea4a15ef22629740f3761c", "d16a0141ec1a18405cd4ce8b4613101da75da0e9a7aec5bdd4fa804d0e0eba73"]
+six = ["1f1b7d42e254082a9db6279deae68afb421ceba6158efa6131de7b3003ee93fd", "30f610279e8b2578cab6db20741130331735c781b56053c59c4076da27f06b66"]
 toposort = ["d80128b83b411d503b0cdb4a8f172998bc1d3b434b6402a349b8ebd734d51a80", "dba5ae845296e3bf37b042c640870ffebcdeb8cd4df45adaa01d8c5476c557dd"]

@@ -2,7 +2,7 @@ from fractions import Fraction
 import hypothesis.strategies as st
 from hypothesis import given, settings
 
-import aiger
+import aiger_bv
 from aiger_bdd import count
 
 from aiger_coins import binomial, coin, mutex_coins
@@ -23,17 +23,11 @@ def test_biased_coin(k, m):
 @given(st.lists(st.integers(1, 5), min_size=2, max_size=10))
 def test_mutex_coins(weights):
     denom = sum(weights)
-    mux, is_valid = mutex_coins(
-        name2prob={f'x{i}': (w, denom) for i, w in enumerate(weights)}
-    )
-    bot = count(is_valid)
+    mux, is_valid = mutex_coins((w, denom) for w in weights)
+    mux = aiger_bv.SignedBVExpr(mux.aigbv)
 
-    # Sanity checks.
-    neq0 = aiger.or_gate(mux.outputs)
-    is_odd = aiger.parity_gate(mux.outputs)
-    for gate in [neq0, is_odd]:
-        prob = Fraction(count(mux >> gate), bot)
-        assert prob == 1
+    one_hot = (mux != 0) & ((mux & (mux - 1)) == 0)
+    assert count(one_hot) == count(is_valid)
 
 
 def test_binomial():

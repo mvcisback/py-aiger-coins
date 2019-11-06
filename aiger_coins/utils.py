@@ -1,7 +1,7 @@
 import math
 from fractions import Fraction
 
-from aiger_bv import atom, ite
+from aiger_bv import atom, encode_int, ite
 
 
 # Python is deprecating fractions.gcd....
@@ -14,16 +14,18 @@ def lcm(a, b):
 # Simplification of py-aiger-gridworld's chain.
 def chain(n, use_1hot=True, state_name='x', action='H'):
     bits = n + 1 if use_1hot else math.ceil(math.log2(n + 1))
-    start = 1 if use_1hot else 0
+    start = encode_int(bits, 1 if use_1hot else 0, signed=False)
 
     x = atom(bits, state_name, signed=False)
     forward = atom(1, action, signed=False)
 
     succ = x << 1 if use_1hot else x + 1
     x2 = ite(forward, succ, x)
-    return x2.aigbv['o', {x2.output: state_name}].feedback(
+    circ = x2.aigbv['o', {x2.output: state_name}]
+    return circ.feedback(
         inputs=[state_name], outputs=[state_name],
-        initials=[start], keep_outputs=True, signed=False
+        latches=[f"{state_name}_prev"],
+        initials=[start], keep_outputs=True
     )
 
 
