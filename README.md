@@ -17,34 +17,35 @@ To install this library run:
 
 `$ pip install py-aiger-coins`
 
+Note that to actually compute probabilities, one needs to install with the bdd option.
+
+`$ pip install py-aiger-coins[bdd]`
+
+For developers, note that this project uses the
+[poetry](https://poetry.eustace.io/) python package/dependency
+management tool. Please familarize yourself with it and then run:
+
+`$ poetry install -E bdd`
+
 # Usage
 
-This tutorial assumes familiarity with
-[py-aiger](https://github.com/mvcisback/py-aiger) and
-[py-aiger-bdd](https://github.com/mvcisback/py-aiger-bdd).  `py-aiger`
-should automatically be installed with `py-aiger-coins` and
-`py-aiger-bdd` can be installed via:
-
-`$ pip install py-aiger-bdd`
+Note this tutorial assumes `py-aiger-bdd` has been installed (see the
+Install section).
 
 ## Biased Coins
 
-We start by encoding a biased coin and computing its
-bias. The coin will be encoded as two circuits
-`top` and `bot` such that `bias = #top / #bot`, where `#`
-indicates model counting.
+We start by encoding a biased coin and computing its bias.
+
 ```python
 from fractions import Fraction
 
-import aiger
 import aiger_coins
-from aiger_bdd import count
 
-prob = Fraction(1, 3)
-top, bot = aiger_coins.coin(prob)
-top, bot = aiger_coins.coin((1, 3))  # or just use a tuple.
+bias = Fraction(1, 3)
+coin1 = aiger_coins.coin(bias)
+coin2 = aiger_coins.coin((1, 3))  # or just use a tuple.
 
-assert Fraction(count(top), count(bot)) == prob
+assert coin1.prob() == coin2.prob() == prob
 ```
 
 ## Distributions on discrete sets
@@ -54,36 +55,82 @@ represent distribution over a finite set. For example, a biased three
 sided dice can be 1-hot encoded with:
 
 ```python
-dice, bot = aiger_coins.mutex_coins(
+dice = aiger_coins.mutex_coins(
     [(1, 6), (3, 6), (2, 6)]
 )
+
+print(dice.freqs())
+# (Fraction(1, 6), Fraction(1, 2), Fraction(1, 3))
 ```
 
-Letting, `⚀ = dice[0]`, `⚁ = dice[1]`, `⚂ = dice[2]`, we can ask the
-probability of drawing an element of `{⚀, ⚁}` with:
-
+Letting, `⚀ = dice[0]`, `⚁ = dice[1]`, `⚂ = dice[2]`, 
 ```python
-assert Fraction(count(dice[0] | dice[1]), count(bot)) == prob
+one, two, three = dice[0], dice[1], dice[2]
 ```
 
-Now to ask what the probability of drawing `x` or `y` is,
-one can simply feed it into a circuit that performs that test!
+We can ask the probability of drawing an element of `{⚀, ⚁}` with:
 
 ```python
-test = aiger.or_gate(['x', 'y']) | aiger.sink(['z'])
-assert Fraction(count(circ >> test), count(bot)) == Fraction(2, 3)
+assert (one | two).prob() == Fraction(2, 3)
+assert (~three).prob() == Fraction(2, 3)
+```
+
+## Distributions and Coins
+
+`Distribution`s and `Coin`s are really just wrappers around two
+`aiger_bv.UnsignedBVExpr` objects stored in the `expr` and `valid`
+attributes.
+
+The attributes `expr` and `valid` encode an expression over fair coin
+flips and which coin flips are "valid" respectively. Coins is a
+special type of `Distribution` where the expression is a predicate
+(e.g. has one output).
+
+Note that accessing the ith element of a `Distribution` results in a
+`Coin` encoding the probability of drawing that element.
+
+### Manipulating Distributions
+
+In general `Distribution`s can me manipulated by manipulating the
+`.expr` attribution to reinterpret the coin flips or manipulating
+`.valid` to condition on different coin flip outcomes.
+
+Out of the box `Distribution`s support a small number of operations:
+`+, <, <=, >=, >, ==, !=, ~, |, &, ^`, which they inherit from
+`aiger_bv.UnsignedBVExpr`. When using the same `.valid` predicate
+(same coin flips), these operations only manipulate the `.expr`
+attribute.
+
+More generally, one can use the `apply` method to apply an arbitrary
+function to the `.expr` attribute. For example, using the dice from
+before:
+
+```python
+dice2 = dice.apply(lambda expr: ~expr[2])
+assert dice2[0].freqs() == Fraction(2, 3)
+```
+
+One can also change the assumptions made on the coin flips by using
+the condition method, for example, suppose we condition on the coin
+flips never being all `False`. This changes the distribution
+as follows:
+
+```python
+coins = dice.coins  #  Bitvector Expression of coin variables.
+dice3 = dice.condition(coins != 0)
+
+print(dice3.freqs())
+# [Fraction(0, 5), Fraction(3, 5), Fraction(2, 5)]
 ```
 
 ## Binomial Distributions
 
-`py-aiger-coins` also supports encoding Binomial distributions. There are two options for encoding, 1-hot encoding which is a format similar to that in the discrete sets section and as an unsigned integers. The following snippet shows how the counts correspond to entries in Pascal's triangle.
+As a convenience, `py-aiger-coins` also supports encoding Binomial
+distributions.
 
 ```python
-x = binomial(6, use_1hot=False)
-y = binomial(6, use_1hot=True)
-for i, v in enumerate([1, 6, 15, 20, 15, 6, 1]):
-    assert v == count(x == i)
-    assert v == count(y == (1 << i))
-```
+x = binomial(3)
 
-Dividing by `2**n` (64 in the example above) results in the probabilities of a Bionomial Distribution.
+print(x.freqs())
+# (Fraction(1, 8), Fraction(3, 8), Fraction(3, 8), Fraction(1, 8))
+```

@@ -15,6 +15,7 @@ python = "^3.6"
 attrs = "^19.3"
 py-aiger-bv = "^1.0.5"
 funcy = "^1.13"
+py-aiger-bdd = {version = "^0.2.3", extras = ["bdd"]}
 
 [tool.poetry.dev-dependencies]
 py-aiger-bdd = "^0.2.3"

@@ -1,8 +1,8 @@
 from fractions import Fraction
-from functools import wraps
+from functools import reduce, wraps
 
 import attr
-from aiger_bv import UnsignedBVExpr
+from aiger_bv import identity_gate, UnsignedBVExpr
 
 
 def unrelated_coins(left, right):
@@ -48,7 +48,7 @@ class Distribution:
 
     @property
     def aigbv(self):
-        pass
+        return self.expr.aigbv
 
     @property
     def output(self):
@@ -56,7 +56,7 @@ class Distribution:
 
     @property
     def inputs(self):
-        return set()
+        return self.expr.inputs
 
     @property
     def size(self):
@@ -69,6 +69,14 @@ class Distribution:
 
     def apply(self, func):
         return type(self)(func(self.expr), self.valid)
+
+    @property
+    def coins(self) -> UnsignedBVExpr:
+        coins = (
+            identity_gate(self.aigbv.imap[i].size, i) for i in self.inputs
+        )
+        coins = reduce(lambda x, y: x | y, coins)
+        return UnsignedBVExpr(coins)
 
     def condition(self, expr):
         return type(self)(self.expr, expr & self.valid)
@@ -104,5 +112,5 @@ class Coin(Distribution):
 
     def prob(self):
         import aiger_bdd
-        top, bot = map(aiger_bdd.count, (self.expr, self.valid))
+        top, bot = map(aiger_bdd.count, (self.expr & self.valid, self.valid))
         return Fraction(top, bot)

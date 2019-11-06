@@ -36,6 +36,31 @@ def test_mutex_coins(weights):
         assert f1 == f2
 
 
+def test_dice():
+    weights = [1, 3, 2]
+    freqs = [Fraction(w, 6) for w in weights]
+    dice = mutex_coins(freqs)
+
+    assert dice.freqs() == tuple(freqs)
+
+    assert (dice[0] | dice[1]).prob() == Fraction(2, 3)
+    assert (~dice[2]).prob() == Fraction(2, 3)
+
+    dice2 = dice.apply(lambda expr: ~expr[2])
+    assert dice2.freqs() == (Fraction(2, 3),)
+
+    assert len(dice.inputs) == 1
+    assert len(dice.aigbv.outputs) == 1
+    assert dice.output == dice.expr.output
+
+    assert len(dice.aig.inputs) == 3
+    assert len(dice.aig.outputs) == dice.size
+
+    dice3 = dice.condition(dice.coins != 0)
+    new_freqs = [Fraction(w, 5) for w in [0, 3, 2]]
+    assert dice3.freqs() == tuple(new_freqs)
+
+
 def test_binomial():
     weights = [1, 6, 15, 20, 15, 6, 1]
     expected_freqs = [Fraction(v, 64) for v in weights]
