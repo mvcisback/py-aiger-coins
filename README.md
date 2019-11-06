@@ -25,7 +25,7 @@ For developers, note that this project uses the
 [poetry](https://poetry.eustace.io/) python package/dependency
 management tool. Please familarize yourself with it and then run:
 
-`$ poetry install -E bdd`
+`$ poetry install`
 
 # Usage
 
