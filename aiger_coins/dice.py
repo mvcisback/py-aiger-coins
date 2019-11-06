@@ -87,6 +87,10 @@ class Distribution:
     def evolve(self, **kwargs):
         return attr.evolve(self, **kwargs)
 
+    def concat(self, other):
+        assert unrelated_coins(self, other)
+        return self.apply(lambda x: x.concat(other)).condition(other.valid)
+
     __add__ = binop(UnsignedBVExpr.__add__)
     __le__ = binop(UnsignedBVExpr.__le__)
     __lt__ = binop(UnsignedBVExpr.__lt__)
