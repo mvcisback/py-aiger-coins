@@ -510,8 +510,11 @@ version = "0.6.0"
 [package.dependencies]
 more-itertools = "*"
 
+[extras]
+bdd = ["py-aiger-bdd"]
+
 [metadata]
-content-hash = "0dbb3ee86021f2489789e5232b69c26fc859809aa690d72b3542b4031e22b5d6"
+content-hash = "4ced99be5e621513bc85fd977239d5c8728a5e25494c35d95dead07e76592f38"
 python-versions = "^3.6"
 
 [metadata.hashes]
