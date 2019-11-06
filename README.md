@@ -11,6 +11,21 @@ Library for creating circuits that encode discrete distributions. The
 name comes from the random bit model of drawing from discrete
 distributions using coin flips.
 
+<!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-refresh-toc -->
+**Table of Contents**
+
+- [py-aiger-coins](#py-aiger-coins)
+- [Install](#install)
+- [Usage](#usage)
+    - [Biased Coins](#biased-coins)
+    - [Distributions on discrete sets](#distributions-on-discrete-sets)
+    - [Distributions and Coins](#distributions-and-coins)
+        - [Manipulating Distributions](#manipulating-distributions)
+    - [Binomial Distributions](#binomial-distributions)
+
+<!-- markdown-toc end -->
+
+
 # Install
 
 To install this library run:
@@ -55,9 +70,7 @@ represent distribution over a finite set. For example, a biased three
 sided dice can be 1-hot encoded with:
 
 ```python
-dice = aiger_coins.mutex_coins(
-    [(1, 6), (3, 6), (2, 6)]
-)
+dice = aiger_coins.dist([(1, 6), (3, 6), (2, 6)])
 
 print(dice.freqs())
 # (Fraction(1, 6), Fraction(1, 2), Fraction(1, 3))

@@ -4,7 +4,7 @@ from hypothesis import given, settings
 
 import aiger_bv
 
-from aiger_coins import binomial, coin, mutex_coins
+from aiger_coins import binomial, coin, dist
 
 
 @settings(max_examples=4, deadline=None)
@@ -18,11 +18,11 @@ def test_biased_coin(k, m):
 
 @settings(max_examples=4, deadline=None)
 @given(st.lists(st.integers(1, 5), min_size=2, max_size=10))
-def test_mutex_coins(weights):
+def test_dist(weights):
     denom = sum(weights)
     freqs = [Fraction(w, denom) for w in weights]
 
-    mux = mutex_coins(freqs)
+    mux = dist(freqs)
 
     def is_one_hot(x):
         x = aiger_bv.SignedBVExpr(x.aigbv)
@@ -39,7 +39,7 @@ def test_mutex_coins(weights):
 def test_dice():
     weights = [1, 3, 2]
     freqs = [Fraction(w, 6) for w in weights]
-    dice = mutex_coins(freqs)
+    dice = dist(freqs)
 
     assert dice.freqs() == tuple(freqs)
 
