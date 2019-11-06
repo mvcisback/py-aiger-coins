@@ -49,15 +49,21 @@ assert Fraction(count(top), count(bot)) == prob
 
 ## Distributions on discrete sets
 
-We now illustrate how to create a set of mutually exclusive coins
-that represent distribution over a finite set. Namely, coordinate
-`i` is `1` iff the `i`th element of the set is drawn. For
-example, a three sided dice can be encoded with:
+We now illustrate how to create a set of mutually exclusive coins that
+represent distribution over a finite set. For example, a biased three
+sided dice can be 1-hot encoded with:
 
 ```python
-circ, bot = aiger_coins.mutex_coins(
-    {'x': (1, 6), 'y': (3, 6), 'z': (2, 6)}
+dice, bot = aiger_coins.mutex_coins(
+    [(1, 6), (3, 6), (2, 6)]
 )
+```
+
+Letting, `⚀ = dice[0]`, `⚁ = dice[1]`, `⚂ = dice[2]`, we can ask the
+probability of drawing an element of `{⚀, ⚁}` with:
+
+```python
+assert Fraction(count(dice[0] | dice[1]), count(bot)) == prob
 ```
 
 Now to ask what the probability of drawing `x` or `y` is,
