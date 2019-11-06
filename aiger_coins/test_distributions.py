@@ -60,6 +60,9 @@ def test_dice():
     new_freqs = [Fraction(w, 5) for w in [0, 3, 2]]
     assert dice3.freqs() == tuple(new_freqs)
 
+    dice4 = dice[0].concat(dice[1]).concat(dice[2])
+    assert dice4.freqs() == tuple(freqs)
+
 
 def test_binomial():
     weights = [1, 6, 15, 20, 15, 6, 1]

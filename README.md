@@ -109,8 +109,8 @@ In general `Distribution`s can me manipulated by manipulating the
 `.valid` to condition on different coin flip outcomes.
 
 Out of the box `Distribution`s support a small number of operations:
-`+, <, <=, >=, >, ==, !=, ~, |, &, ^`, which they inherit from
-`aiger_bv.UnsignedBVExpr`. When using the same `.valid` predicate
+`+, <, <=, >=, >, ==, !=, ~, |, &, ^, .concat`, which they inherit
+from `aiger_bv.UnsignedBVExpr`. When using the same `.valid` predicate
 (same coin flips), these operations only manipulate the `.expr`
 attribute.
 

@@ -68,7 +68,9 @@ class Distribution:
         return kind(expr=expr, valid=self.valid)
 
     def apply(self, func):
-        return type(self)(func(self.expr), self.valid)
+        expr = func(self.expr)
+        kind = Coin if expr.size == 1 else Distribution
+        return kind(expr=expr, valid=self.valid)
 
     @property
     def coins(self) -> UnsignedBVExpr:
@@ -88,8 +90,11 @@ class Distribution:
         return attr.evolve(self, **kwargs)
 
     def concat(self, other):
+        dist = self.apply(lambda x: x.concat(other))
+        if same_coins(self, other):
+            return dist
         assert unrelated_coins(self, other)
-        return self.apply(lambda x: x.concat(other)).condition(other.valid)
+        return dist.condition(other.valid)
 
     __add__ = binop(UnsignedBVExpr.__add__)
     __le__ = binop(UnsignedBVExpr.__le__)
