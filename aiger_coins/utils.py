@@ -12,15 +12,14 @@ def lcm(a, b):
 
 
 # Simplification of py-aiger-gridworld's chain.
-def chain(n, use_1hot=True, state_name='x', action='H'):
-    bits = n + 1 if use_1hot else math.ceil(math.log2(n + 1))
-    start = encode_int(bits, 1 if use_1hot else 0, signed=False)
+def chain(n, state_name='x', action='H'):
+    bits = n + 1
+    start = encode_int(bits, 1, signed=False)
 
     x = atom(bits, state_name, signed=False)
     forward = atom(1, action, signed=False)
 
-    succ = x << 1 if use_1hot else x + 1
-    x2 = ite(forward, succ, x)
+    x2 = ite(forward, x << 1, x)
     circ = x2.aigbv['o', {x2.output: state_name}]
     return circ.feedback(
         inputs=[state_name], outputs=[state_name],

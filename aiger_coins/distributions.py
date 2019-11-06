@@ -5,13 +5,12 @@ import funcy as fn
 from aiger_bv import atom, UnsignedBVExpr
 
 from aiger_coins import utils
+from aiger_coins.dice import Distribution
 
 
-def coin(prob, input_name=None):
-    # TODO: reimplement in terms of common_denominator_method.
+def coin(prob, name=None):
     prob = utils.to_frac(prob)
-    mux, is_valid = mutex_coins((prob, 1 - prob))
-    return mux[0], is_valid
+    return mutex_coins((prob, 1 - prob), name=name)[0]
 
 
 def mutex_coins(probs, name=None, keep_seperate=False):
@@ -42,9 +41,11 @@ def mutex_coins(probs, name=None, keep_seperate=False):
     if not keep_seperate:
         coins = reduce(UnsignedBVExpr.concat, coins)
 
-    return coins, is_valid
+    return Distribution(expr=coins, valid=is_valid)
 
 
-def binomial(n, use_1hot=False):
-    chain = utils.chain(n, use_1hot)
-    return UnsignedBVExpr(chain.unroll(n, only_last_outputs=True))
+def binomial(n):
+    chain = utils.chain(n)
+    expr = UnsignedBVExpr(chain.unroll(n, only_last_outputs=True))
+    const_true = ~(expr @ 0)
+    return Distribution(expr=expr, valid=const_true)
