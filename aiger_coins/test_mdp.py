@@ -17,3 +17,8 @@ def test_mdp_smoke():
 
     dyn2 = dist >> circ2mdp(circ)
     assert dyn2.inputs == {'x'}
+
+    assert dyn2.aigbv.inputs == {'x'} | dist.inputs
+    assert dyn2.aigbv.outputs == dyn2.outputs | {'##valid'}
+
+    assert '##valid[0]' in dyn2.aig.outputs
