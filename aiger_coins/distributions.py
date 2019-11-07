@@ -28,6 +28,11 @@ def dist(probs, name=None, keep_seperate=False):
     weights = map(lambda p: p.numerator*(lcm // p.denominator), probs)
 
     bits = atom(word_len, name, signed=False)
+    if name is not None:
+        bits = bits.with_output(name)
+
+    name = bits.output
+
     const_true = ~(bits @ 0)
     total, coins = 0, []
     for i, weight in enumerate(weights):
@@ -38,8 +43,11 @@ def dist(probs, name=None, keep_seperate=False):
 
     is_valid = const_true if lcm == max_val else bits < lcm
 
-    if not keep_seperate:
-        coins = reduce(UnsignedBVExpr.concat, coins)
+    if keep_seperate:
+        return coins, is_valid
+
+    coins = reduce(UnsignedBVExpr.concat, coins) \
+        .with_output(name)
 
     return Distribution(expr=coins, valid=is_valid)
 

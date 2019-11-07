@@ -13,7 +13,7 @@ packages = [
 [tool.poetry.dependencies]
 python = "^3.6"
 attrs = "^19.3"
-py-aiger-bv = "^1.0.5"
+py-aiger-bv = "^1.2.1"
 funcy = "^1.13"
 py-aiger-bdd = {version = "^0.2.3", optional=true}
 

@@ -1,8 +1,12 @@
+from __future__ import annotations
+
 from fractions import Fraction
 from functools import reduce, wraps
 
 import attr
 from aiger_bv import identity_gate, UnsignedBVExpr
+
+import aiger_coins as aigc
 
 
 def unrelated_coins(left, right):
@@ -107,6 +111,10 @@ class Distribution:
     __or__ = binop(UnsignedBVExpr.__or__)
     __and__ = binop(UnsignedBVExpr.__and__)
     __xor__ = binop(UnsignedBVExpr.__xor__)
+
+    def __rshift__(self, other):
+        assert isinstance(other, aigc.MDP)
+        return other << self
 
 
 @attr.s(frozen=True)
