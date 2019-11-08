@@ -23,7 +23,6 @@ drawing from discrete distributions using coin flips.
         - [Manipulating Distributions](#manipulating-distributions)
     - [Binomial Distributions](#binomial-distributions)
     - [Markov Decision Processes and Probablistic Circuits](#markov-decision-processes-and-probablistic-circuits)
-        - [Markov Chains](#markov-chains)
 
 <!-- markdown-toc end -->
 
