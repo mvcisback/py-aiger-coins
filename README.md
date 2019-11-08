@@ -7,9 +7,9 @@
 
 
 # py-aiger-coins
-Library for creating circuits that encode discrete distributions. The
-name comes from the random bit model of drawing from discrete
-distributions using coin flips.
+Library for creating circuits that encode discrete distributions and
+Markov Decision PRocesses. The name comes from the random bit model of
+drawing from discrete distributions using coin flips.
 
 <!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-refresh-toc -->
 **Table of Contents**
@@ -22,6 +22,8 @@ distributions using coin flips.
     - [Distributions and Coins](#distributions-and-coins)
         - [Manipulating Distributions](#manipulating-distributions)
     - [Binomial Distributions](#binomial-distributions)
+    - [Markov Decision Processes and Probablistic Circuits](#markov-decision-processes-and-probablistic-circuits)
+        - [Markov Chains](#markov-chains)
 
 <!-- markdown-toc end -->
 
@@ -49,7 +51,8 @@ Install section).
 
 ## Biased Coins
 
-We start by encoding a biased coin and computing its bias.
+We start by encoding a biased coin and computing its bias. The primary
+entrypoint for modeling coins is the `coin` function.
 
 ```python
 from fractions import Fraction
@@ -70,7 +73,9 @@ represent distribution over a finite set. For example, a biased three
 sided dice can be 1-hot encoded with:
 
 ```python
-dice = aiger_coins.dist([(1, 6), (3, 6), (2, 6)])
+dice = aiger_coins.dist([1, 3, 2], name='x')
+dice = aiger_coins.dist([(1, 6), (3, 6), (2, 6)], name='x')  # equivalent
+dice = aiger_coins.dist([Fraction(1, 6), Fraction(3, 6), Fraction(2, 6)], name='x')  # equivalent
 
 print(dice.freqs())
 # (Fraction(1, 6), Fraction(1, 2), Fraction(1, 3))
@@ -146,4 +151,42 @@ x = binomial(3)
 
 print(x.freqs())
 # (Fraction(1, 8), Fraction(3, 8), Fraction(3, 8), Fraction(1, 8))
+```
+
+## Markov Decision Processes and Probablistic Circuits
+
+`aiger_coins` also supports modeling Probablistic Circuits, Markov
+Decision Process (MDPs), and Markov Chains (MDPs with no inputs).
+
+Internally, the `MDP` object is simply an `AIGBV` bitvector circuit
+with some inputs annotated with distributions over their inputs.
+
+The primary entropy point to modeling a Markov Decision Process is
+the `circ2mdp` functions.
+
+```python
+from aiger_bv import atom
+from aiger_coins import circ2mdp, dist2mdp
+
+x = atom(2, 'x', signed=False)
+y = atom(3, 'y', signed=False)
+
+mdp1 = circ2mdp(x & y)
+mdp1 = circ2mdp((x & y).aigbv)  # equivalent
+
+# Put a distribution over the y input.
+dist = aiger_coins.dist((0, 1, 2), name='y')
+
+mdp2 = dist >> mdp1
+mdp2 = mdp1 << dist  # equivalent
+mdp2 = circ2mdp(x & y, {'y': dist})  # equivalent
+
+assert mdp.inputs == {'x', 'y'}
+assert mdp2.inputs == {'x'}
+
+# Can recover put AIG or AIGBV objects using .aig and .aigbv attributes.
+## Special output, '##valid', monitors if the sequence of inputs and coin flips was valid.
+
+circ2 = mdp2.aigbv
+assert cric2.outputs == mdp2.outputs | {'##valid'}
 ```

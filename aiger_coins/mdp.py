@@ -59,7 +59,7 @@ class MDP:
         assert isinstance(other, MDP)
         assert not (self.env_inputs & other.env_inputs)
         return circ2mdp(
-            circ=self._aigbv >> other._aigbv,
+            circ=self._aigbv << other._aigbv,
             input2dist=self.input2dist + other.input2dist,
         )
 
@@ -69,6 +69,9 @@ class MDP:
 
 
 def circ2mdp(circ, input2dist=None):
+    if not isinstance(circ, AIGBV):
+        circ = circ.aigbv
+
     if input2dist is None:
         return MDP(circ)
 
