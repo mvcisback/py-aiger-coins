@@ -81,3 +81,52 @@ def test_find_coin_flips():
     sys_actions2, states2 = sys.decode_trc(actions)
     assert sys_actions2 == sys_actions
     assert states2 == states
+
+
+def test_mdp_readme():
+    from aiger_bv import atom
+    from aiger_coins import circ2mdp
+
+    x = atom(3, 'x', signed=False)
+    y = atom(3, 'y', signed=False)
+    expr = (x & y).with_output('x&y')
+
+    mdp1 = circ2mdp(expr)
+    dist = aiger_coins.dist((0, 1, 2), name='y')
+
+    mdp2 = dist >> mdp1
+
+    assert mdp1.inputs == {'x', 'y'}
+    assert mdp2.inputs == {'x'}
+
+    mdp3 = mdp2 | circ2mdp(aiger_bv.identity_gate(3, 'z'))
+    assert mdp3.inputs == {'x', 'z'}
+    assert mdp3.outputs == {'x&y', 'z'}
+
+    mdp4 = mdp3.feedback(inputs=['z'], outputs=['x&y'], keep_outputs=True)
+    assert mdp4.inputs == {'x'}
+    assert mdp4.outputs == {'x&y', 'z'}
+
+    action = atom(1, 'action', signed=False)
+    x_prev = atom(1, 'x_prev', signed=False)
+    c = atom(1, 'c', signed=False)
+
+    x_next = (x_prev & c & action).with_output('x_next')
+
+    sys = circ2mdp(x_next).feedback(
+        keep_outputs=True,
+        inputs=['x_prev'], outputs=['x_next'], initials=[(True,)],
+    )
+    sys <<= coin((1, 2), name='c')
+    assert sys.inputs == {'action'}
+    assert sys.outputs == {'x_next'}
+
+    sys_actions = 3*[{'action': (True,)}]
+    states = 3*[{'x_next': (True,)}]
+
+    actions = sys.encode_trc(sys_actions, states)
+    assert not any(v['c'][0] for v in actions)
+
+    sys_actions2, states2 = sys.decode_trc(actions)
+    assert sys_actions2 == sys_actions
+    assert states2 == states
