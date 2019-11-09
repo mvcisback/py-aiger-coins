@@ -1,5 +1,6 @@
 import attr
 
+import aiger_bv
 from aiger_bv import atom, identity_gate, AIGBV
 from pyrsistent import pmap
 from pyrsistent.typing import PMap
@@ -96,3 +97,29 @@ def circ2mdp(circ, input2dist=None):
 def dist2mdp(dist):
     circ = identity_gate(dist.size, dist.output)
     return circ2mdp(circ=circ, input2dist={dist.output: dist})
+
+
+def find_coin_flips(trc, mdp):
+    from aiger_sat import sat_bv
+    circ = mdp.aigbv.unroll(len(trc))
+
+    expr = atom(1, True, signed=False)
+    for t, (ivals, ovals) in enumerate(trc):
+        expr &= atom(1, f"##valid##time_{t+1}", signed=False) == 1
+
+        for k, v in ovals.items():
+            var = atom(len(v), k + f"##time_{t+1}", signed=False)
+            expr &= var == aiger_bv.decode_int(v, signed=False)
+
+        for k, v in ivals.items():
+            name = k + f"##time_{t}"
+            circ <<= aiger_bv.source(len(v), v, name=name, signed=False)
+
+    circ = circ >> expr.aigbv
+    assert len(circ.outputs) == 1
+
+    model = sat_bv.solve(aiger_bv.UnsignedBVExpr(circ))
+    return [
+        {k: model[f"{k}##time_{t}"] for k in mdp.env_inputs}
+        for t in range(len(trc))
+    ]

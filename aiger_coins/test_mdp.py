@@ -1,8 +1,9 @@
 import aiger_bv
+import aiger_ptltl
 
 import aiger_coins
 from aiger_coins import coin
-from aiger_coins.mdp import circ2mdp
+from aiger_coins.mdp import circ2mdp, find_coin_flips
 from aiger_coins.utils import chain
 
 
@@ -58,3 +59,22 @@ def test_closed_system():
     )
     assert sys.inputs == set()
     assert sys.outputs == {'s'}
+
+
+def test_find_coin_flips():
+    x, c = map(aiger_ptltl.atom, ('x', 'c'))
+
+    sys = (x & c).historically().aig
+    sys = circ2mdp(aiger_bv.aig2aigbv(sys))
+    sys <<= coin((1, 2), name='c')
+
+    assert sys.inputs == {'x'}
+    assert len(sys.outputs) == 1
+
+    out, *_ = sys.outputs
+    trace = 3*[
+        ({'x': (True,)}, {out: (True,)}),
+    ]
+
+    coin_flips = find_coin_flips(trace, sys)
+    assert not any(v['c'][0] for v in coin_flips)
