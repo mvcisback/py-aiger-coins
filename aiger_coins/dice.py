@@ -101,7 +101,7 @@ class Distribution:
         return dist.condition(other.valid)
 
     def with_output(self, name):
-        return attr.evolve(self, self.expr.with_output(name))
+        return attr.evolve(self, expr=self.expr.with_output(name))
 
     __add__ = binop(UnsignedBVExpr.__add__)
     __le__ = binop(UnsignedBVExpr.__le__)

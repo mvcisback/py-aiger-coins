@@ -10,15 +10,23 @@ from aiger_coins.dice import Distribution
 
 def coin(prob, name=None):
     prob = utils.to_frac(prob)
-    return dist((prob, 1 - prob), name=name)[0]
+    return dist((prob, 1 - prob), name=name)[0] \
+        .with_output(name)
 
 
 def _normalize_probs(probs):
+    if len(probs) == 1:
+        assert not isinstance(probs[0], int)
+
     probs = list(probs)
     if all(isinstance(x, int) for x in probs):
         total = sum(probs)
         probs = [(x, total) for x in probs]
     probs = fn.lmap(utils.to_frac, probs)
+
+    if len(probs) == 1:
+        probs = [probs[0], 1 - probs[0]]
+
     assert sum(probs) == 1
     return probs
 
@@ -28,6 +36,7 @@ def dist(probs, name=None, keep_seperate=False):
 
     Encoded using the common denominator method.
     """
+    is_coin = len(probs) == 1
     probs = _normalize_probs(probs)
     bots = [p.denominator for p in probs]
     lcm = reduce(utils.lcm, bots, 1)
@@ -56,7 +65,8 @@ def dist(probs, name=None, keep_seperate=False):
     coins = reduce(UnsignedBVExpr.concat, coins) \
         .with_output(name)
 
-    return Distribution(expr=coins, valid=is_valid)
+    _dist = Distribution(expr=coins, valid=is_valid)
+    return _dist[0] if is_coin else _dist
 
 
 def binomial(n):

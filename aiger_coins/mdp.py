@@ -65,7 +65,22 @@ class MDP:
 
     def __rshift__(self, other):
         assert not isinstance(other, aigc.Distribution)
-        return self << other
+        return other << self
+
+    def __or__(self, other):
+        assert not (self.env_inputs & other.env_inputs)
+        return circ2mdp(
+            circ=self._aigbv | other._aigbv,
+            input2dist=self.input2dist + other.input2dist,
+        )
+
+    def feedback(self, inputs, outputs, initials=None, latches=None,
+                 keep_outputs=False):
+        assert set(inputs) <= self.inputs
+        circ = self._aigbv.feedback(
+            inputs, outputs, initials, latches, keep_outputs
+        )
+        return circ2mdp(circ, input2dist=self.input2dist)
 
 
 def circ2mdp(circ, input2dist=None):
