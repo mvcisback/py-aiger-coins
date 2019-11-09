@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/mvcisback/py-aiger-coins.svg?branch=master)](https://travis-ci.org/mvcisback/py-aiger-coins)
+[![Build Status](https://cloud.drone.io/api/badges/mvcisback/py-aiger-coins/status.svg)](https://cloud.drone.io/mvcisback/py-aiger-coins)
 [![codecov](https://codecov.io/gh/mvcisback/py-aiger-coins/branch/master/graph/badge.svg)](https://codecov.io/gh/mvcisback/py-aiger-coins)
 [![Updates](https://pyup.io/repos/github/mvcisback/py-aiger-coins/shield.svg)](https://pyup.io/repos/github/mvcisback/py-aiger-coins/)
 
