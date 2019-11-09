@@ -3,7 +3,7 @@ import aiger_ptltl
 
 import aiger_coins
 from aiger_coins import coin
-from aiger_coins.mdp import circ2mdp, find_coin_flips
+from aiger_coins.mdp import circ2mdp
 from aiger_coins.utils import chain
 
 
@@ -72,9 +72,12 @@ def test_find_coin_flips():
     assert len(sys.outputs) == 1
 
     out, *_ = sys.outputs
-    trace = 3*[
-        ({'x': (True,)}, {out: (True,)}),
-    ]
+    sys_actions = 3*[{'x': (True,)}]
+    states = 3*[{out: (True,)}]
 
-    coin_flips = find_coin_flips(trace, sys)
-    assert not any(v['c'][0] for v in coin_flips)
+    actions = sys.encode_trc(sys_actions, states)
+    assert not any(v['c'][0] for v in actions)
+
+    sys_actions2, states2 = sys.decode_trc(actions)
+    assert sys_actions2 == sys_actions
+    assert states2 == states

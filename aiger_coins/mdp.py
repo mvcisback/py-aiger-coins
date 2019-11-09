@@ -1,4 +1,5 @@
 import attr
+import funcy as fn
 
 import aiger_bv
 from aiger_bv import atom, identity_gate, AIGBV
@@ -83,6 +84,20 @@ class MDP:
         )
         return circ2mdp(circ, input2dist=self.input2dist)
 
+    def encode_trc(self, sys_actions, states):
+        coin_flips = find_coin_flips(sys_actions, states, mdp=self)
+        return [fn.merge(a, c) for a, c in zip(sys_actions, coin_flips)]
+
+    def decode_trc(self, actions):
+        circ = self.aigbv
+        sys_actions = [fn.project(a, self.inputs) for a in actions]
+
+        states = fn.lpluck(0, circ.simulate(actions))
+        assert all(s['##valid'] for s in states)
+        states = [fn.omit(s, {'##valid'}) for s in states]
+
+        return sys_actions, states
+
 
 def circ2mdp(circ, input2dist=None):
     if not isinstance(circ, AIGBV):
@@ -99,19 +114,27 @@ def dist2mdp(dist):
     return circ2mdp(circ=circ, input2dist={dist.output: dist})
 
 
-def find_coin_flips(trc, mdp):
-    from aiger_sat import sat_bv
-    circ = mdp.aigbv.unroll(len(trc))
+def find_coin_flips(actions, states, mdp):
+    try:
+        from aiger_sat import sat_bv
+    except ImportError:
+        raise ImportError("Need to install py-aiger-sat to use this method.")
+
+    horizon = len(actions)
+    assert len(actions) == len(states) == horizon
+
+    circ = mdp.aigbv.unroll(horizon)
 
     expr = atom(1, True, signed=False)
-    for t, (ivals, ovals) in enumerate(trc):
+    for t, state in enumerate(states):
         expr &= atom(1, f"##valid##time_{t+1}", signed=False) == 1
 
-        for k, v in ovals.items():
+        for k, v in state.items():
             var = atom(len(v), k + f"##time_{t+1}", signed=False)
             expr &= var == aiger_bv.decode_int(v, signed=False)
 
-        for k, v in ivals.items():
+    for t, action in enumerate(actions):
+        for k, v in action.items():
             name = k + f"##time_{t}"
             circ <<= aiger_bv.source(len(v), v, name=name, signed=False)
 
@@ -121,5 +144,5 @@ def find_coin_flips(trc, mdp):
     model = sat_bv.solve(aiger_bv.UnsignedBVExpr(circ))
     return [
         {k: model[f"{k}##time_{t}"] for k in mdp.env_inputs}
-        for t in range(len(trc))
+        for t in range(horizon)
     ]
