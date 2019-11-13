@@ -115,34 +115,39 @@ def dist2mdp(dist):
 
 
 def find_coin_flips(actions, states, mdp):
+    return list(_find_coin_flips(actions, states, mdp))
+
+
+def _constraint(k, v):
+    var = atom(len(v), k, signed=False)
+    return var == aiger_bv.decode_int(v, signed=False)
+
+
+def _find_coin_flips(actions, states, mdp):
     try:
         from aiger_sat import sat_bv
     except ImportError:
         raise ImportError("Need to install py-aiger-sat to use this method.")
+    assert len(actions) == len(states)
 
-    horizon = len(actions)
-    assert len(actions) == len(states) == horizon
+    circ1 = mdp.aigbv
+    circ2 = circ1.unroll(1)
+    for action, state in zip(actions, states):
+        action = fn.walk_keys("{}##time_0".format, action)
+        state = fn.walk_keys("{}##time_1".format, state)
 
-    circ = mdp.aigbv.unroll(horizon)
+        circ3 = circ2
+        for i in mdp.inputs:
+            size = circ1.imap[i].size
+            circ3 |= aiger_bv.identity_gate(size, f"{i}##time_0")
 
-    expr = atom(1, True, signed=False)
-    for t, state in enumerate(states):
-        expr &= atom(1, f"##valid##time_{t+1}", signed=False) == 1
+        expr = atom(1, f"##valid##time_1", signed=False) == 1
+        for k, v in fn.chain(state.items(), action.items()):
+            expr &= _constraint(k, v)
 
-        for k, v in state.items():
-            var = atom(len(v), k + f"##time_{t+1}", signed=False)
-            expr &= var == aiger_bv.decode_int(v, signed=False)
+        circ3 >>= expr.aigbv
+        assert len(circ3.outputs) == 1
 
-    for t, action in enumerate(actions):
-        for k, v in action.items():
-            name = k + f"##time_{t}"
-            circ <<= aiger_bv.source(len(v), v, name=name, signed=False)
-
-    circ = circ >> expr.aigbv
-    assert len(circ.outputs) == 1
-
-    model = sat_bv.solve(aiger_bv.UnsignedBVExpr(circ))
-    return [
-        {k: model[f"{k}##time_{t}"] for k in mdp.env_inputs}
-        for t in range(horizon)
-    ]
+        model = sat_bv.solve(aiger_bv.UnsignedBVExpr(circ3))
+        model = fn.walk_keys(lambda x: x.split("##time_")[0], model)
+        yield model
