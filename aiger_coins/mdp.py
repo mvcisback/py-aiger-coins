@@ -1,6 +1,7 @@
 import attr
 import funcy as fn
 
+import aiger
 import aiger_bv
 from aiger_bv import atom, identity_gate, AIGBV
 from pyrsistent import pmap
@@ -125,29 +126,42 @@ def _constraint(k, v):
 
 def _find_coin_flips(actions, states, mdp):
     try:
-        from aiger_sat import sat_bv
+        from aiger_sat import solve
     except ImportError:
         raise ImportError("Need to install py-aiger-sat to use this method.")
     assert len(actions) == len(states)
 
     circ1 = mdp.aigbv
-    circ2 = circ1.unroll(1)
+    step, lmap = circ1.aig.cutlatches(circ1.aig.latches)
+
+    prev_latch = dict(lmap.values())
     for action, state in zip(actions, states):
-        action = fn.walk_keys("{}##time_0".format, action)
-        state = fn.walk_keys("{}##time_1".format, state)
+        curr_step = step << aiger.source(prev_latch)
 
-        circ3 = circ2
-        for i in mdp.inputs:
-            size = circ1.imap[i].size
-            circ3 |= aiger_bv.identity_gate(size, f"{i}##time_0")
+        for a, v in action.items():
+            size = circ1.imap[a].size
+            const = aiger_bv.source(
+                size, aiger_bv.decode_int(v, signed=False),
+                name=a, signed=False
+            )
+            curr_step <<= const.aig
 
-        expr = atom(1, f"##valid##time_1", signed=False) == 1
-        for k, v in fn.chain(state.items(), action.items()):
+        expr = atom(1, f"##valid", signed=False) == 1
+        for k, v in fn.chain(state.items()):
             expr &= _constraint(k, v)
 
-        circ3 >>= expr.aigbv
-        assert len(circ3.outputs) == 1
+        curr_step >>= expr.aig
 
-        model = sat_bv.solve(aiger_bv.UnsignedBVExpr(circ3))
-        model = fn.walk_keys(lambda x: x.split("##time_")[0], model)
-        yield model
+        query = curr_step >> aiger.sink(prev_latch.keys())
+        assert len(query.outputs) == 1
+
+        model = solve(query)
+        assert model is not None
+        # HACK. Put model back into bitvector.
+        yield circ1.imap.omit(mdp.inputs).unblast(model)
+
+        if len(prev_latch) > 0:
+            next_latch_circ = curr_step >> aiger.sink(expr.aig.outputs)
+            next_latch = next_latch_circ(model)[0]
+            assert next_latch.keys() == prev_latch.keys()
+            prev_latch = next_latch
