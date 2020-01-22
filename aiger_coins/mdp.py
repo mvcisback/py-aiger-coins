@@ -126,7 +126,7 @@ def _constraint(k, v):
     return var == aiger_bv.decode_int(v, signed=False)
 
 
-@lru_cache
+@lru_cache(maxsize=10_000)
 def solve(query):
     try:
         from aiger_sat import solve
