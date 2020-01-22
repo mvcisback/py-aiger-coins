@@ -1,3 +1,5 @@
+from functools import lru_cache
+
 import attr
 import funcy as fn
 
@@ -124,15 +126,24 @@ def _constraint(k, v):
     return var == aiger_bv.decode_int(v, signed=False)
 
 
-def _find_coin_flips(actions, states, mdp):
+@lru_cache
+def solve(query):
     try:
         from aiger_sat import solve
     except ImportError:
         raise ImportError("Need to install py-aiger-sat to use this method.")
+    return solve(query)
+
+
+def _find_coin_flips(actions, states, mdp):
+    if len(mdp.env_inputs) == 0:
+        yield from [{} for _ in actions]
+        return
+
     assert len(actions) == len(states)
 
     circ1 = mdp.aigbv
-    step, lmap = circ1.aig.cutlatches(circ1.aig.latches)
+    step, lmap = circ1.aig.cutlatches()
 
     prev_latch = dict(lmap.values())
     for action, state in zip(actions, states):
