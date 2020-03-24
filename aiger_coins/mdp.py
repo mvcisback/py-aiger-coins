@@ -19,6 +19,10 @@ def _create_input2dist(input2dist):
     })
 
 
+def hash_transition(mdp, prev_latch, action, state):
+    return hash(tuple(map(pmap, (prev_latch, action, state))))
+
+
 @attr.s(frozen=True, auto_attribs=True, eq=False, order=False)
 class MDP:
     _aigbv: AIGBV
@@ -87,6 +91,46 @@ class MDP:
         )
         return circ2mdp(circ, input2dist=self.input2dist)
 
+    @fn.memoize
+    def _cutlatches(self):
+        circ1 = self.aigbv
+        return circ1.aig.cutlatches(), circ1
+
+    @fn.memoize(key_func=hash_transition)
+    def _encode(self, prev_latch, action, state):
+        (step, lmap), circ1 = self._cutlatches()
+        curr_step = step << aiger.source(prev_latch)
+
+        for a, v in action.items():
+            size = circ1.imap[a].size
+            const = aiger_bv.source(
+                size, aiger_bv.decode_int(v, signed=False),
+                name=a, signed=False
+            )
+            curr_step <<= const.aig
+
+        expr = atom(1, f"##valid", signed=False) == 1
+        for k, v in fn.chain(state.items()):
+            expr &= _constraint(k, v)
+
+        curr_step >>= expr.aig
+
+        query = curr_step >> aiger.sink(prev_latch.keys())
+        assert len(query.outputs) == 1
+
+        model = solve(query)
+        assert model is not None
+        # HACK. Put model back into bitvector.
+        coins = circ1.imap.omit(self.inputs).unblast(model)
+
+        if len(prev_latch) > 0:
+            next_latch_circ = curr_step >> aiger.sink(expr.aig.outputs)
+            next_latch = next_latch_circ(model)[0]
+            assert next_latch.keys() == prev_latch.keys()
+            prev_latch = next_latch
+
+        return coins, prev_latch
+
     def encode_trc(self, sys_actions, states):
         coin_flips = find_coin_flips(sys_actions, states, mdp=self)
         return [fn.merge(a, c) for a, c in zip(sys_actions, coin_flips)]
@@ -141,38 +185,8 @@ def _find_coin_flips(actions, states, mdp):
         return
 
     assert len(actions) == len(states)
-
-    circ1 = mdp.aigbv
-    step, lmap = circ1.aig.cutlatches()
-
+    (_, lmap), _ = mdp._cutlatches()
     prev_latch = dict(lmap.values())
     for action, state in zip(actions, states):
-        curr_step = step << aiger.source(prev_latch)
-
-        for a, v in action.items():
-            size = circ1.imap[a].size
-            const = aiger_bv.source(
-                size, aiger_bv.decode_int(v, signed=False),
-                name=a, signed=False
-            )
-            curr_step <<= const.aig
-
-        expr = atom(1, f"##valid", signed=False) == 1
-        for k, v in fn.chain(state.items()):
-            expr &= _constraint(k, v)
-
-        curr_step >>= expr.aig
-
-        query = curr_step >> aiger.sink(prev_latch.keys())
-        assert len(query.outputs) == 1
-
-        model = solve(query)
-        assert model is not None
-        # HACK. Put model back into bitvector.
-        yield circ1.imap.omit(mdp.inputs).unblast(model)
-
-        if len(prev_latch) > 0:
-            next_latch_circ = curr_step >> aiger.sink(expr.aig.outputs)
-            next_latch = next_latch_circ(model)[0]
-            assert next_latch.keys() == prev_latch.keys()
-            prev_latch = next_latch
+        coins, prev_latch = mdp._encode(prev_latch, action, state)
+        yield coins
