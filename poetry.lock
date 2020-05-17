@@ -333,8 +333,8 @@ category = "main"
 description = "A python library for manipulating sequential and-inverter gates."
 name = "py-aiger"
 optional = false
-python-versions = ">=3.6,<4.0"
-version = "4.1.1"
+python-versions = ">=3.7,<4.0"
+version = "6.0.0"
 
 [package.dependencies]
 attrs = ">=19.3,<20.0"
@@ -349,28 +349,28 @@ category = "main"
 description = "Aiger to BDD bridge."
 name = "py-aiger-bdd"
 optional = false
-python-versions = ">=3.6,<4.0"
-version = "1.0.0"
+python-versions = ">=3.7,<4.0"
+version = "3.0.0"
 
 [package.dependencies]
 attrs = ">=19.3,<20.0"
 bidict = ">=0.18.0,<0.19.0"
 dd = ">=0.5.4,<0.6.0"
 funcy = ">=1.12,<2.0"
-py-aiger = ">=4.0.0,<5.0.0"
+py-aiger = ">=6.0.0,<7.0.0"
 
 [[package]]
 category = "main"
 description = "A python library for manipulating sequential and-inverter gates."
 name = "py-aiger-bv"
 optional = false
-python-versions = ">=3.6,<4.0"
-version = "2.1.1"
+python-versions = ">=3.7,<4.0"
+version = "4.0.0"
 
 [package.dependencies]
 attrs = ">=19.1,<20.0"
 funcy = ">=1.12,<2.0"
-py-aiger = ">=4.1.1,<5.0.0"
+py-aiger = ">=6.0.0,<7.0.0"
 pyrsistent = ">=0.15.4,<0.16.0"
 
 [[package]]
@@ -378,41 +378,41 @@ category = "main"
 description = "Python library to convert between AIGER and CNF"
 name = "py-aiger-cnf"
 optional = false
-python-versions = ">=3.6,<4.0"
-version = "3.0.0"
+python-versions = ">=3.7,<4.0"
+version = "5.0.0"
 
 [package.dependencies]
 bidict = ">=0.18.0,<0.19.0"
 funcy = ">=1.12,<2.0"
-py-aiger = ">=4.0.0,<5.0.0"
+py-aiger = ">=6.0.0,<7.0.0"
 
 [[package]]
 category = "dev"
 description = "Library for generating (p)ast (t)ense (l)inear (t)emporal (l)ogic monitors as aiger circuits."
 name = "py-aiger-ptltl"
 optional = false
-python-versions = ">=3.6,<4.0"
-version = "1.2.0"
+python-versions = ">=3.7,<4.0"
+version = "3.0.0"
 
 [package.dependencies]
-py-aiger = ">=4.0.0,<5.0.0"
+py-aiger = ">=6.0.0,<7.0.0"
 
 [[package]]
 category = "main"
 description = "Pythonic interface between AIGs and SAT solvers."
 name = "py-aiger-sat"
 optional = false
-python-versions = ">=3.6,<4.0"
-version = "1.1.0"
+python-versions = ">=3.7,<4.0"
+version = "2.0.0"
 
 [package.dependencies]
 attrs = ">=19.3,<20.0"
-py-aiger = ">=4.0.0,<5.0.0"
-py-aiger-cnf = ">=3.0.0,<4.0.0"
-python-sat = ">=0.1.4.dev13,<0.2.0"
+py-aiger = ">=6.0.0,<7.0.0"
+py-aiger-cnf = ">=5.0.0,<6.0.0"
+python-sat = "0.1.5.dev13"
 
 [package.extras]
-bitvector = ["py-aiger-bv (>=2.0.0,<3.0.0)"]
+bitvector = ["py-aiger-bv (>=4.0.0,<5.0.0)"]
 
 [[package]]
 category = "dev"
@@ -637,8 +637,8 @@ bdd = ["py-aiger-bdd"]
 sat = ["py-aiger-sat"]
 
 [metadata]
-content-hash = "1ee5bdaf264405033ea2c9fc8fa2bf857b50880dafd5df341cdb3991a991853c"
-python-versions = "^3.6"
+content-hash = "b8107a102962b3771bbf9d5b8919d78095ef29deaea65310d76062692b9570bb"
+python-versions = "^3.7"
 
 [metadata.files]
 apipkg = [
@@ -787,28 +787,28 @@ py = [
     {file = "py-1.8.1.tar.gz", hash = "sha256:5e27081401262157467ad6e7f851b7aa402c5852dbcb3dae06768434de5752aa"},
 ]
 py-aiger = [
-    {file = "py-aiger-4.1.1.tar.gz", hash = "sha256:7e7b5aa91606cf701cc64f9a8d2641818c9467c2414ab5dbcee2a181fd267357"},
-    {file = "py_aiger-4.1.1-py3-none-any.whl", hash = "sha256:c01e363111768b53c2236dbe1b791f3331e066f0be3d71a3adce6c4a2b190a16"},
+    {file = "py-aiger-6.0.0.tar.gz", hash = "sha256:48357d1dcbd99fae0474dc779ca2726eea37cf82f7bebeb67f596a1a2718ad96"},
+    {file = "py_aiger-6.0.0-py3-none-any.whl", hash = "sha256:82dd9a112073628bddf6eb00bda34754e63ffb92a35363a55cccc0c3c6f7a105"},
 ]
 py-aiger-bdd = [
-    {file = "py-aiger-bdd-1.0.0.tar.gz", hash = "sha256:9072e75987f9de7c578b3cf0a93f5ab7b85117b19685a5724970290598c531ce"},
-    {file = "py_aiger_bdd-1.0.0-py3-none-any.whl", hash = "sha256:3fa1aca901e0ae319bcebe5b41cf6e01f61d4025c797cf78f95c9ef6523e6624"},
+    {file = "py-aiger-bdd-3.0.0.tar.gz", hash = "sha256:f91ac998ce1d2e352f522ff69937ee55ed69a20d649dcc8abcfd7cd63c955844"},
+    {file = "py_aiger_bdd-3.0.0-py3-none-any.whl", hash = "sha256:4f7fb3689cb995e0dea40eddaa19b7abf86f886aefd38a30b6314bbd153a2df2"},
 ]
 py-aiger-bv = [
-    {file = "py-aiger-bv-2.1.1.tar.gz", hash = "sha256:58da3fc878ece8215f7c278a3cf589e777062ef4c43f16e4d26a0c5dd381a28e"},
-    {file = "py_aiger_bv-2.1.1-py3-none-any.whl", hash = "sha256:d1ea17cacb7beb6c7ab2554846738436b932af23416e207ed7f11c1788792cea"},
+    {file = "py-aiger-bv-4.0.0.tar.gz", hash = "sha256:9a307d5ee0401d5bde59c50a344b11db8c38714ca9171f8f8c53e051d369216c"},
+    {file = "py_aiger_bv-4.0.0-py3-none-any.whl", hash = "sha256:efc18c3e1a28657548d50e73fdcfdd3ee7e9877191429c27f59fc60e199d18b4"},
 ]
 py-aiger-cnf = [
-    {file = "py-aiger-cnf-3.0.0.tar.gz", hash = "sha256:212c0963e82ed01316d02809fdfe494041a5a82d88c65a219687a6f358b8ed5c"},
-    {file = "py_aiger_cnf-3.0.0-py3-none-any.whl", hash = "sha256:ab31e786a53f0e518bbdfdd6026a4f8d3d2fa935843220c9f2df0892ac320501"},
+    {file = "py-aiger-cnf-5.0.0.tar.gz", hash = "sha256:765bcadf0359e841fd12822ec5a9bbb2e57389be387ce3f1cec172ce96022b79"},
+    {file = "py_aiger_cnf-5.0.0-py3-none-any.whl", hash = "sha256:2db1d06436bf9cac497d3e1f7fd461a2e40444ca8f1817fcdb9686ead7213d1b"},
 ]
 py-aiger-ptltl = [
-    {file = "py-aiger-ptltl-1.2.0.tar.gz", hash = "sha256:f4758ff3b0a7b18b8170eaeb9f0ab0ced4e08de042de0857776f912fac8b851b"},
-    {file = "py_aiger_ptltl-1.2.0-py3-none-any.whl", hash = "sha256:a95b63fa743b488082a424aba1882075574f89de1442d604fa53554ef15c0592"},
+    {file = "py-aiger-ptltl-3.0.0.tar.gz", hash = "sha256:507d2d9c1e8a49f448d950d78f9fc2471cde419382dc2022565dee6a2e1434a6"},
+    {file = "py_aiger_ptltl-3.0.0-py3-none-any.whl", hash = "sha256:60d3ee9850ab4858f73b1da49490e10f83ad1b461b7b0a338317cd96f44cb43c"},
 ]
 py-aiger-sat = [
-    {file = "py-aiger-sat-1.1.0.tar.gz", hash = "sha256:07721e8fe1aba454b83a9e3afed46250c66d5237109006c6bcfca3c973a5ce59"},
-    {file = "py_aiger_sat-1.1.0-py3-none-any.whl", hash = "sha256:6616ee82dea402555a9a8deb9a5c96a9310df5688831ef5afab2eefff95b4214"},
+    {file = "py-aiger-sat-2.0.0.tar.gz", hash = "sha256:563ff364f0844cae705aa8beec67a4c9c83e02ccbc2ead5ab3db7b3260e12d08"},
+    {file = "py_aiger_sat-2.0.0-py3-none-any.whl", hash = "sha256:b7230af541ff813bd507a512590f950eed1976fc050989a1b2df577b8f72c4ce"},
 ]
 pycodestyle = [
     {file = "pycodestyle-2.5.0-py2.py3-none-any.whl", hash = "sha256:95a2219d12372f05704562a14ec30bc76b05a5b297b21a5dfe3f6fac3491ae56"},
