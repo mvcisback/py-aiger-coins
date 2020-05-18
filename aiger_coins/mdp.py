@@ -109,7 +109,7 @@ class MDP:
             )
             curr_step <<= const.aig
 
-        expr = atom(1, f"##valid", signed=False) == 1
+        expr = atom(1, "##valid", signed=False) == 1
         for k, v in fn.chain(state.items()):
             expr &= _constraint(k, v)
 
