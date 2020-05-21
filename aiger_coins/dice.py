@@ -132,3 +132,6 @@ class Coin(Distribution):
         import aiger_bdd
         top, bot = map(aiger_bdd.count, (self.expr & self.valid, self.valid))
         return Fraction(top, bot)
+
+
+__all__ = ['Coin', 'Distribution']
