@@ -329,7 +329,7 @@ description = "A python library for manipulating sequential and-inverter gates."
 name = "py-aiger"
 optional = false
 python-versions = ">=3.7,<4.0"
-version = "6.0.0"
+version = "6.1.1"
 
 [package.dependencies]
 attrs = ">=19.3,<20.0"
@@ -360,12 +360,12 @@ description = "A python library for manipulating sequential and-inverter gates."
 name = "py-aiger-bv"
 optional = false
 python-versions = ">=3.7,<4.0"
-version = "4.0.0"
+version = "4.2.1"
 
 [package.dependencies]
 attrs = ">=19.1,<20.0"
 funcy = ">=1.12,<2.0"
-py-aiger = ">=6.0.0,<7.0.0"
+py-aiger = ">=6.1.1,<7.0.0"
 pyrsistent = ">=0.15.4,<0.16.0"
 
 [[package]]
@@ -632,7 +632,7 @@ bdd = ["py-aiger-bdd"]
 sat = ["py-aiger-sat"]
 
 [metadata]
-content-hash = "ccd8e06b27c4d80645287205709b4cc40c61fe668660f676daff91fdaebdb181"
+content-hash = "4afffdae03ea85fc37dfe48ac5d9e48ed183de2d2347ed3148b54391a36ec359"
 python-versions = "^3.7"
 
 [metadata.files]
@@ -778,16 +778,16 @@ py = [
     {file = "py-1.8.1.tar.gz", hash = "sha256:5e27081401262157467ad6e7f851b7aa402c5852dbcb3dae06768434de5752aa"},
 ]
 py-aiger = [
-    {file = "py-aiger-6.0.0.tar.gz", hash = "sha256:48357d1dcbd99fae0474dc779ca2726eea37cf82f7bebeb67f596a1a2718ad96"},
-    {file = "py_aiger-6.0.0-py3-none-any.whl", hash = "sha256:82dd9a112073628bddf6eb00bda34754e63ffb92a35363a55cccc0c3c6f7a105"},
+    {file = "py-aiger-6.1.1.tar.gz", hash = "sha256:31dab44dbf5fa9e6233ef871526f341d8084c9ab3160a3544a08a193d957d187"},
+    {file = "py_aiger-6.1.1-py3-none-any.whl", hash = "sha256:73eb28d26255554bd74c752aff985b354a11b873bb2fbd4de9e1b9c333d7bace"},
 ]
 py-aiger-bdd = [
     {file = "py-aiger-bdd-3.0.0.tar.gz", hash = "sha256:f91ac998ce1d2e352f522ff69937ee55ed69a20d649dcc8abcfd7cd63c955844"},
     {file = "py_aiger_bdd-3.0.0-py3-none-any.whl", hash = "sha256:4f7fb3689cb995e0dea40eddaa19b7abf86f886aefd38a30b6314bbd153a2df2"},
 ]
 py-aiger-bv = [
-    {file = "py-aiger-bv-4.0.0.tar.gz", hash = "sha256:9a307d5ee0401d5bde59c50a344b11db8c38714ca9171f8f8c53e051d369216c"},
-    {file = "py_aiger_bv-4.0.0-py3-none-any.whl", hash = "sha256:efc18c3e1a28657548d50e73fdcfdd3ee7e9877191429c27f59fc60e199d18b4"},
+    {file = "py-aiger-bv-4.2.1.tar.gz", hash = "sha256:511722e34877171694812e562e6a3a3bf9e86b6319a3efd3260aa7581cbac4cc"},
+    {file = "py_aiger_bv-4.2.1-py3-none-any.whl", hash = "sha256:55a2e49b641c2426beec000f3e695cbaf1dd93c6c80806c2bf4f908f838cc39a"},
 ]
 py-aiger-cnf = [
     {file = "py-aiger-cnf-5.0.0.tar.gz", hash = "sha256:765bcadf0359e841fd12822ec5a9bbb2e57389be387ce3f1cec172ce96022b79"},

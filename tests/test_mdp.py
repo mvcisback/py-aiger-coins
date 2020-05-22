@@ -39,10 +39,15 @@ def test_closed_system():
 
     dyn = circ2mdp(chain(n=4, state_name='s', action='a'))
     dyn <<= (c1 & a).with_output('a').aigbv
-    dyn <<= coin((1, 8), name='c1')
+    c1_coin = coin((1, 8), name='c1')
+    dyn <<= c1_coin
 
     assert dyn.inputs == {'a'}
     assert dyn.outputs == {'s'}
+    start = {'s_prev': (True, False, False, False, False)}
+    end = {'s_prev': (False, True, False, False, False)}
+    assert dyn.prob(start, {'a': (0,)}, end) == 0
+    assert dyn.prob(start, {'a': (1,)}, end) == c1_coin.prob() == 1/8
 
     c2 = aiger_bv.atom(1, 'c2', signed=False)
     const_false = aiger_bv.atom(1, 0, signed=False)

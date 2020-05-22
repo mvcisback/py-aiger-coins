@@ -1,3 +1,4 @@
+from fractions import Fraction
 from functools import lru_cache
 
 import attr
@@ -5,7 +6,8 @@ import funcy as fn
 
 import aiger
 import aiger_bv
-from aiger_bv import atom, identity_gate, AIGBV
+import aiger_bv as BV
+from aiger_bv import uatom, identity_gate, AIGBV
 from pyrsistent import pmap
 from pyrsistent.typing import PMap
 
@@ -47,7 +49,7 @@ class MDP:
         assert "##valid" not in self.outputs
 
         circ = self._aigbv
-        is_valid = atom(1, 1, signed=False)
+        is_valid = uatom(1, 1)
         for dist in self.input2dist.values():
             circ <<= dist.expr.aigbv
             is_valid &= dist.valid
@@ -109,7 +111,7 @@ class MDP:
             )
             curr_step <<= const.aig
 
-        expr = atom(1, "##valid", signed=False) == 1
+        expr = uatom(1, "##valid") == 1
         for k, v in fn.chain(state.items()):
             expr &= _constraint(k, v)
 
@@ -145,6 +147,51 @@ class MDP:
 
         return sys_actions, states
 
+    def prob(self, start, action, end) -> Fraction:
+        """
+        Returns the probability of transitioning from start to end
+        using action.
+        """
+        # 1. Init latches to start.
+        circ = self.aigbv.reinit(start)
+
+        # 2. Omit observations. `end` specifies latches.
+        for out in self.outputs:
+            circ >>= BV.sink(circ.omap[out].size, out)
+        assert circ.outputs == {'##valid'}
+
+        # 3. Create circuit to check valid coin flips.
+        assert circ.omap['##valid'].size == 1
+        is_valid = BV.UnsignedBVExpr(circ.unroll(1))
+
+        circ >>= BV.sink(1, {'##valid'})  # Assume circ has no outputs now.
+
+        # 4. Expose latchouts via unrolling.
+        circ = circ.unroll(1, omit_latches=False)
+        end = {f'{k}##time_1': v for k, v in end.items()}
+        action = {f'{k}##time_0': v for k, v in action.items()}
+        assert set(end.keys()) == circ.outputs
+        assert set(action.keys()) <= circ.inputs
+
+        # 5. Create circuit to check if inputs lead to end.
+        test_equals = uatom(1, 1)
+        for k, v in end.items():
+            size = circ.omap[k].size
+            test_equals &= uatom(size, k) == uatom(size, v)
+        match_end = BV.UnsignedBVExpr(circ >> test_equals.aigbv)
+
+        # 6. Create circuit to assert inputs match action.
+        match_action = uatom(1, 1)
+        for k, v in action.items():
+            size = circ.imap[k].size
+            match_action &= uatom(size, k) == uatom(size, v)
+
+        # 7. Compute transition probability.
+        return aigc.Coin(
+            expr=match_end & match_action,
+            valid=is_valid & match_action,
+        ).prob()
+
 
 def circ2mdp(circ, input2dist=None):
     if not isinstance(circ, AIGBV):
@@ -166,7 +213,7 @@ def find_coin_flips(actions, states, mdp):
 
 
 def _constraint(k, v):
-    var = atom(len(v), k, signed=False)
+    var = uatom(len(v), k)
     return var == aiger_bv.decode_int(v, signed=False)
 
 
