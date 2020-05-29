@@ -122,6 +122,10 @@ class MDP:
 
         model = solve(query)
         assert model is not None
+
+        # Fill in any model don't cares.
+        model = fn.merge({i: False for i in circ1.aig.inputs}, model)
+
         # HACK. Put model back into bitvector.
         coins = circ1.imap.omit(self.inputs).unblast(model)
 
