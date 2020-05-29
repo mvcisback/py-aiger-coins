@@ -88,6 +88,28 @@ def test_find_coin_flips():
     assert states2 == states
 
 
+def test_find_env_input():
+    x, c = map(aiger_ptltl.atom, ('x', 'c'))
+
+    sys = (x & c).historically().aig
+    sys = circ2mdp(aiger_bv.aig2aigbv(sys))
+    sys <<= coin((1, 2), name='c')
+
+    assert sys.inputs == {'x'}
+    assert len(sys.outputs) == 1
+
+    out, *_ = sys.outputs
+    sys_actions = 3*[{'x': (True,)}]
+    states = 3*[{out: (True,)}]
+
+    start = end = sys.aigbv.latch2init
+    action = {'x': (True,)}
+    coins = sys.find_env_input(start, action, end)
+    
+    _, lmap = sys.aigbv(inputs={**action, **coins})
+    assert lmap == end
+
+
 def test_mdp_readme():
     from aiger_bv import atom
     from aiger_coins import circ2mdp

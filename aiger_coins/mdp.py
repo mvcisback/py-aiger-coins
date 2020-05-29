@@ -1,3 +1,5 @@
+from typing import Mapping, Sequence
+
 from fractions import Fraction
 from functools import lru_cache
 
@@ -23,6 +25,9 @@ def _create_input2dist(input2dist):
 
 def hash_transition(mdp, prev_latch, action, state):
     return hash(tuple(map(pmap, (prev_latch, action, state))))
+
+
+BVInput = Mapping[str, Sequence[bool]]
 
 
 @attr.s(frozen=True, auto_attribs=True, eq=False, order=False)
@@ -151,17 +156,13 @@ class MDP:
 
         return sys_actions, states
 
-    def prob(self, start, action, end) -> Fraction:
-        """
-        Returns the probability of transitioning from start to end
-        using action.
-        """
+    def _transition_coin(self, start, action, end):
         # 1. Init latches to start.
         circ = self.aigbv.reinit(start)
 
         # 2. Omit observations. `end` specifies latches.
         for out in self.outputs:
-            circ >>= BV.sink(circ.omap[out].size, out)
+            circ >>= BV.sink(circ.omap[out].size, [out])
         assert circ.outputs == {'##valid'}
 
         # 3. Create circuit to check valid coin flips.
@@ -190,11 +191,45 @@ class MDP:
             size = circ.imap[k].size
             match_action &= uatom(size, k) == uatom(size, v)
 
-        # 7. Compute transition probability.
         return aigc.Coin(
             expr=match_end & match_action,
             valid=is_valid & match_action,
-        ).prob()
+        )
+
+    def prob(self, start, action, end) -> Fraction:
+        """
+        Returns the probability of transitioning from start to end
+        using action.
+        """
+        return self._transition_coin(start, action, end).prob()
+
+    def find_env_input(self, start, action, end):
+        """
+        Returns the probability of transitioning from start to end
+        using action.
+        """
+        coin = self._transition_coin(start, action, end)
+        query = coin.expr & coin.valid
+        default = {i: query.aigbv.imap[i].size*(False,) for i in query.inputs}
+
+        try:
+            from aiger_sat.sat_bv import solve
+        except ImportError:
+            msg = "Need to install py-aiger-sat to use this method."
+            raise ImportError(msg)
+
+        model = solve(query)
+
+        if model is None:
+            return None
+
+        model = fn.merge(default, solve(query))
+        return {remove_suffix(k, '##time_0'): model[k] for k in query.inputs}
+
+
+def remove_suffix(val: str, suffix: str) -> str:
+    assert val.endswith(suffix)
+    return val[:-len(suffix)]
 
 
 def circ2mdp(circ, input2dist=None):
