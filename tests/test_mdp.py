@@ -99,13 +99,11 @@ def test_find_env_input():
     assert len(sys.outputs) == 1
 
     out, *_ = sys.outputs
-    sys_actions = 3*[{'x': (True,)}]
-    states = 3*[{out: (True,)}]
 
     start = end = sys.aigbv.latch2init
     action = {'x': (True,)}
     coins = sys.find_env_input(start, action, end)
-    
+
     _, lmap = sys.aigbv(inputs={**action, **coins})
     assert lmap == end
 
