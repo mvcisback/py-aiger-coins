@@ -66,7 +66,7 @@ def test_loopback_unroll():
              .assume((y > 0) & (y < 4))
 
     pcirc2 = pcirc.loopback({
-        'input': 'x', 
+        'input': 'x',
         'output': 'z',
         'init': 4,
         'keep_output': True,
@@ -83,4 +83,4 @@ def test_loopback_unroll():
 
     pcirc4 = pcirc2.unroll(3, only_last_outputs=True)
     assert pcirc4.outputs == {'z##time_3'}
-    pcirc4({})  # Could technically be any value due to roll back. 
+    pcirc4({})  # Could technically be any value due to roll back.

@@ -127,9 +127,9 @@ class PCirc:
                omit_latches=True,
                only_last_outputs=False) -> PCirc:
         circ = self.circ.unroll(
-            horizon=horizon, 
-            init=init, 
-            omit_latches=omit_latches, 
+            horizon=horizon,
+            init=init,
+            omit_latches=omit_latches,
             only_last_outputs=only_last_outputs,
         )
         dist_map = {}
@@ -139,7 +139,7 @@ class PCirc:
             if name not in self.dist_map:
                 continue
             dist_map[timed_name] = self.dist_map[name]
-            
+
         return attr.evolve(self, circ=circ, dist_map=dist_map)
 
     simulator = aiger_discrete.FiniteFunc.simulator
