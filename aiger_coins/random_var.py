@@ -24,7 +24,17 @@ class RandomVarCirc:
         return attr.evolve(self, pcirc=self.pcirc.with_output(name))
 
     def assume(self, pred) -> RandomVarCirc:
-        return attr.evolve(self, pcirc=pcirc.assume(pred))
+        return attr.evolve(self, pcirc=self.pcirc.assume(pred))
+
+    def output_dist(self):
+        # TODO: Return Callable distribution which outputs
+        # The probability that output matches a given value.
+        # This is done by creating MDD and doing literal weighted
+        # model count.
+        raise NotImplementedError()
+
+    def prob(self, val):
+        return self.output_dist()(val)
 
 
 __all__ = ['RandomVarCirc']
