@@ -151,6 +151,10 @@ class PCirc:
         # 2. every random distribution is over fair coins.
         pass
 
+    def with_distmap(self, dist_map) -> PCirc:
+        """Update the distributions over the inputs."""
+        return attr.evolve(self, dist_map=self.dist_map + pmap(dist_map))
+
 
 def canon(circ) -> PCirc:
     if isinstance(circ, PCirc):
