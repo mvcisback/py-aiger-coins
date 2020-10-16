@@ -5,17 +5,13 @@ import random
 import uuid
 from fractions import Fraction
 from functools import reduce
-from typing import Any, Callable, Union, Mapping, Tuple
+from typing import Any, Mapping, Optional, Sequence, Union
 
-import aiger
 import aiger_bv as BV
 import aiger_discrete
 import attr
 import funcy as fn
 from aiger_discrete import FiniteFunc
-from aiger_discrete.discrete import project, TIMED_NAME
-from pyrsistent import pmap
-from pyrsistent.typing import PMap
 
 
 Prob = Union[float, Fraction]
@@ -23,7 +19,7 @@ Distribution = Mapping[Any, Prob]
 
 
 def coin_gadget(name: str,
-                dist: Distribution, 
+                dist: Distribution,
                 func: FiniteFunc,
                 tree_encoding: bool = True) -> PCirc:
     """Return a Probabilistic Circuit representing a distribution.
@@ -37,7 +33,7 @@ def coin_gadget(name: str,
                  .get(name, aiger_discrete.Encoding()) \
                  .encode
     dist = ((p, BV.uatom(size, encode(v))) for v, p in dist.items())
-    
+
     # Create priority queue.
     cost = len if tree_encoding else (lambda x: -len(x))
     queue = [(cost(elem), elem) for elem in dist]
@@ -48,10 +44,10 @@ def coin_gadget(name: str,
         cost2, (weight2, expr2) = heapq.heappop(queue)
 
         # Create new coin input.
-        coin = BV.uatom(1, None) 
+        coin = BV.uatom(1, None)
         bias = weight1 / (weight1 + weight2)
         coins.append((fn.first(coin.inputs), bias))
-        
+
         # Merge and add back to queue.
         expr12 = BV.ite(coin, expr1, expr2)
         cost12 = cost1 + cost2  # (-x + -y) == -(x + y).
@@ -182,8 +178,7 @@ class PCirc:
         kind, relabels = others
         if (kind == 'i') and (self.coins_id in relabels):
             raise ValueError("Use with_coins_id to relabel coins.")
-
-        return attr.evolve(self, circ=circ, **kwargs)
+        return attr.evolve(self, circ=circ)
 
     def loopback(self, *wirings) -> PCirc:
         inputs = self.inputs
@@ -198,7 +193,7 @@ class PCirc:
                only_last_outputs=False) -> PCirc:
         # Unroll underlying circuit.
         circ = self.circ.unroll(
-            horizon=horizon, init=init, omit_latches=omit_latches, 
+            horizon=horizon, init=init, omit_latches=omit_latches,
             only_last_outputs=only_last_outputs,
         )
 
@@ -206,13 +201,13 @@ class PCirc:
             return attr.evolve(self, circ=circ)
 
         # Merge timed coin sequences into a single input.
-        coins = BV.uatom(self.num_coins * horizon, coins_id)
+        coins = BV.uatom(self.num_coins * horizon, self.coins_id)
         for time in range(horizon):
             name = f"{circ.coins_id}##time_{time}"
             assert name in circ.inputs
 
-            start = time * num_coins
-            end = start + num_coins
+            start = time * self.num_coins
+            end = start + self.num_coins
             circ <<= coins[start:end].with_output(name).aigbv
         biases = self.coin_biases * horizon
 
@@ -224,7 +219,7 @@ class PCirc:
 
 def pcirc(func,
           dist_map: Optional[Mapping[str, Distribution]] = None,
-          tree_encoding: bool=True) -> PCirc:
+          tree_encoding: bool = True) -> PCirc:
     """Lift Discrete Function to a probilistic circuit."""
     func = to_finite_func(func)
     if dist_map is None:
@@ -257,4 +252,4 @@ def canon(circ) -> PCirc:
     return circ.with_coins_id()
 
 
-__all__ = ['PCirc', 'pcirc']
+__all__ = ['PCirc', 'pcirc', 'coin', 'die']
