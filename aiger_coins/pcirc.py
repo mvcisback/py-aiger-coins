@@ -206,16 +206,18 @@ class PCirc:
 
         # Merge timed coin sequences into a single input.
         coins = BV.uatom(self.num_coins * horizon, self.coins_id)
+        relabeler = BV.aig2aigbv(aiger.empty())
         for time in range(horizon):
-            name = f"{circ.coins_id}##time_{time}"
+            name = f"{self.coins_id}##time_{time}"
             assert name in circ.inputs
 
             start = time * self.num_coins
             end = start + self.num_coins
-            circ <<= coins[start:end].with_output(name).aigbv
+            relabeler |= coins[start:end].with_output(name).aigbv
+        circ <<= relabeler
         biases = self.coin_biases * horizon
 
-        return PCirc(circ, coins_id=self.coins_id, coins_biases=biases)
+        return PCirc(circ, coins_id=self.coins_id, coin_biases=biases)
 
     def randomize(self, dist_map: Mapping[str, Distribution]) -> PCirc:
         circ = BV.aig2aigbv(aiger.empty())

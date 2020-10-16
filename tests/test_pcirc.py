@@ -15,16 +15,15 @@ def test_pcirc1():
     # Represent dice with a 2 bit vector.
     expr1 = BV.uatom(2, '🎲')
 
-    # Add encoded dice to x. Because why not.
     func = aiger_discrete.from_aigbv(
-        expr2.aigbv, input_encodings={'🎲': encoder}
+        expr1.aigbv, input_encodings={'🎲': encoder}
     )
     # Create distribution over bits.
     circ = C.pcirc(func) \
             .randomize({'🎲': {'⚀': 1/6, '⚁': 2/6, '⚂': 3/6}})
 
-    assert circ.inputs == {'x'}
-    assert circ.outputs == {expr2.output}
+    assert circ.inputs == set()
+    assert circ.outputs == {expr1.output}
     assert circ.coin_biases == (1/3, 1/2)
 
 
@@ -78,3 +77,24 @@ def test_parcompose():
     assert len(inc_xy.outputs) == 2
     assert inc_xy.num_coins == inc_x.num_coins + inc_y.num_coins
     assert inc_xy.num_coins == 3
+
+
+def test_loopback_unroll():
+    x, y = BV.uatom(2, 'x'), BV.uatom(2, 'y')
+
+    expr = (x + y).with_output('z')
+
+    pcirc = C.pcirc(expr) \
+             .loopback({'input': 'x', 'output': 'z', 
+                        'keep_output': True}) \
+             .randomize({'y': {0: 1/2, 1: 1/2}})
+
+    assert pcirc.inputs == set()
+    assert pcirc.outputs == {'z'}
+    assert pcirc.num_coins == 1
+
+    unrolled = pcirc.unroll(4)
+    assert unrolled.inputs == set()
+    assert unrolled.outputs == {f'z##time_{t}' for t in range(1, 5)}
+    assert unrolled.num_coins == 4
+    assert unrolled.coin_biases == (1/2, 1/2, 1/2, 1/2)
