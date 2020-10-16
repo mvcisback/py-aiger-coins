@@ -7,6 +7,7 @@ from fractions import Fraction
 from functools import reduce
 from typing import Any, Mapping, Optional, Sequence, Union
 
+import aiger
 import aiger_bv as BV
 import aiger_discrete
 import attr
@@ -93,8 +94,11 @@ def merge_pcirc_coins(circ, left: PCirc, right: PCirc, coins_id: str):
         biases = right.coin_biases
     else:
         coins = BV.uatom(left.num_coins + right.num_coins, coins_id)
-        circ <<= coins[:left.num_coins].with_output(left.coins_id).aigbv
-        circ <<= coins[:right.num_coins].with_output(right.coins_id).aigbv
+
+        relabeler = coins[:left.num_coins].with_output(left.coins_id).aigbv \
+                  | coins[:right.num_coins].with_output(right.coins_id).aigbv
+
+        circ <<= relabeler
         biases = tuple(left.coin_biases) + tuple(right.coin_biases)
     return circ, biases
 
@@ -213,37 +217,33 @@ class PCirc:
 
         return PCirc(circ, coins_id=self.coins_id, coins_biases=biases)
 
+    def randomize(self, dist_map: Mapping[str, Distribution]) -> PCirc:
+        circ = BV.aig2aigbv(aiger.empty())
+        for name in dist_map.keys():
+            size = self.circ.circ.imap[name].size  # TODO: propogate imap.
+            circ |= BV.identity_gate(size, name)
+
+        func = aiger_discrete.from_aigbv(
+            circ=circ,
+            input_encodings=self.circ.input_encodings,
+            output_encodings=self.circ.output_encodings,
+        )
+        return pcirc(func, dist_map) >> self
+
     simulator = aiger_discrete.FiniteFunc.simulator
     simulate = aiger_discrete.FiniteFunc.simulate
 
 
 def pcirc(func,
           dist_map: Optional[Mapping[str, Distribution]] = None,
-          tree_encoding: bool = True) -> PCirc:
+          tree_encoding: bool = False) -> PCirc:
     """Lift Discrete Function to a probilistic circuit."""
     func = to_finite_func(func)
     if dist_map is None:
-        return PCirc(circ=func)
+        return PCirc(circ=func, coin_biases=())
 
     gadgets = coin_gadgets(dist_map, func, tree_encoding)
     return gadgets >> func
-
-
-def die(biases, name=None, tree_encoding=True):
-    """Model an n-sided dice with weights given in biases.
-
-    biases[i] = un-normalized probability of outputting i.
-    """
-    expr = BV.uatom(len(biases), name)
-    if name is None:
-        name = fn.first(expr.inputs)
-    func = to_finite_func(expr.with_output(name))
-    dist_map = {name: dict(enumerate(biases))}
-    return pcirc(func, dist_map=dist_map, tree_encoding=tree_encoding)
-
-
-def coin(bias, name=None):
-    return die((1 - bias, bias), name=name)
 
 
 def canon(circ) -> PCirc:
@@ -252,4 +252,4 @@ def canon(circ) -> PCirc:
     return circ.with_coins_id()
 
 
-__all__ = ['PCirc', 'pcirc', 'coin', 'die']
+__all__ = ['PCirc', 'pcirc']
