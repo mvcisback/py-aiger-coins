@@ -16,7 +16,6 @@ def test_pcirc1():
     expr1 = BV.uatom(2, '🎲')
 
     # Add encoded dice to x. Because why not.
-    expr2 = BV.uatom(2, 'x') + expr1
     func = aiger_discrete.from_aigbv(
         expr2.aigbv, input_encodings={'🎲': encoder}
     )

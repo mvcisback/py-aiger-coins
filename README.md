@@ -136,7 +136,7 @@ func = aiger_discrete.from_aigbv(
 
 # Create distribution over bits.
 circ = C.pcirc(func) \
-        .randomize({'🎲': {'⚀': 1/6, '⚁': 2/6, , '⚂': 3/6}})
+        .randomize({'🎲': {'⚀': 1/6, '⚁': 2/6, '⚂': 3/6}})
 
 assert circ.inputs == {'x'}
 assert circ.outputs == {expr2.output}
