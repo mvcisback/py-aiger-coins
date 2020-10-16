@@ -14,7 +14,7 @@ packages = [
 python = "^3.7"
 attrs = "^20.0.0"
 py-aiger = "^6.1.1"
-py-aiger-bv = "^4.2.1"
+py-aiger-bv = "^4.4.0"
 funcy = "^1.13"
 py-aiger-bdd = {version = "^3.0.0", optional = true}
 py-aiger-sat = {version = "^3.0.4", optional = true}

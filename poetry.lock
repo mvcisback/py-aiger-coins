@@ -358,7 +358,7 @@ description = "A python library for manipulating sequential and-inverter gates."
 name = "py-aiger-bv"
 optional = false
 python-versions = ">=3.7,<4.0"
-version = "4.3.2"
+version = "4.4.0"
 
 [package.dependencies]
 attrs = ">=20.0.0,<21.0.0"
@@ -645,7 +645,7 @@ bdd = ["py-aiger-bdd"]
 sat = ["py-aiger-sat"]
 
 [metadata]
-content-hash = "2352238787f4fa418367c257a963feea3849d9321384ae537a296205d9ef72cb"
+content-hash = "0016856158dd5bd5566018068a9504f8a845e0ad6698dc0f048e0d12a0832bd2"
 lock-version = "1.0"
 python-versions = "^3.7"
 
@@ -805,8 +805,8 @@ py-aiger-bdd = [
     {file = "py_aiger_bdd-3.0.1-py3-none-any.whl", hash = "sha256:96e5d314379334a4099087fcce67072eb88c82d181708c297cf54258514d4236"},
 ]
 py-aiger-bv = [
-    {file = "py-aiger-bv-4.3.2.tar.gz", hash = "sha256:312cc57ff033c5a487204cbe4db84c11ad912f46764391d59bc007e4a0f63d24"},
-    {file = "py_aiger_bv-4.3.2-py3-none-any.whl", hash = "sha256:510d857d1c767d436a9dcbdde938b99dce3bca9840c22e1b1634558f067e460e"},
+    {file = "py-aiger-bv-4.4.0.tar.gz", hash = "sha256:0313462991488757234d9679f1fbdf493f9b17ceab9d78df14dd6b258d69c6ed"},
+    {file = "py_aiger_bv-4.4.0-py3-none-any.whl", hash = "sha256:e8e7a908732aa98f347411778bd170e806b04d5c11df4aa5c83827f9e27aecf7"},
 ]
 py-aiger-cnf = [
     {file = "py-aiger-cnf-5.0.1.tar.gz", hash = "sha256:85c1446e6cad0353716df7eb1a902eb4487ce27691c4a1e16a3c9699ed733276"},
