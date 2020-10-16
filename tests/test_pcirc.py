@@ -12,6 +12,8 @@ def test_coin():
     assert my_coin.inputs == set()
     assert my_coin.outputs == {'x'}
     assert my_coin.coin_biases == (0.7,)
+    assert my_coin.circ({my_coin.coins_id: 0})[0]['x'] == 1
+    assert my_coin.circ({my_coin.coins_id: 1})[0]['x'] == 0
 
 
 def test_die():
@@ -52,8 +54,13 @@ def test_pcirc():
 
     # Create distribution over bits.
     circ = pcirc(func, dist_map={
-        '🎲': {'⚀': 1, '⚁': 2, '⚂': 1/3},
+        '🎲': {
+            '⚀': Fraction(1, 6),
+            '⚁': Fraction(2, 6),
+            '⚂': Fraction(3, 6),
+        },
     })
 
     assert circ.inputs == {'x'}
     assert circ.outputs == {expr2.output}
+    assert circ.coin_biases == (Fraction(1, 3), Fraction(1, 2))
