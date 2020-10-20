@@ -118,7 +118,14 @@ class PCirc:
     coin_biases: Sequence[Prob]           # Bias of each coin flips.
     coins_id: str = "##coins"             # Input reservered for coin flips.
 
-    # TODO: validate that coin biases matches length of inputs.
+    def __attrs_post_init__(self):
+        if not self.has_coins:
+            return
+        circ: BV.AIGBV = self.circ.circ
+        if self.coins_id not in circ.imap:
+            raise ValueError("Underlying circuit doesn't have coins input.")
+        if circ.imap[self.coins_id].size != len(self.coin_biases):
+            raise ValueError("Underlying circuit doesn't have enough coins.")
 
     @property
     def has_coins(self): return len(self.coin_biases) > 0
@@ -220,6 +227,7 @@ class PCirc:
         return PCirc(circ, coins_id=self.coins_id, coin_biases=biases)
 
     def randomize(self, dist_map: Mapping[str, Distribution]) -> PCirc:
+        """Apply distributions in dist_map to corresponding inputs."""
         circ = BV.aig2aigbv(aiger.empty())
         for name in dist_map.keys():
             size = self.circ.circ.imap[name].size  # TODO: propogate imap.
