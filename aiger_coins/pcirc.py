@@ -96,7 +96,7 @@ def merge_pcirc_coins(circ, left: PCirc, right: PCirc, coins_id: str):
         coins = BV.uatom(left.num_coins + right.num_coins, coins_id)
 
         relabeler = coins[:left.num_coins].with_output(left.coins_id).aigbv \
-                  | coins[:right.num_coins].with_output(right.coins_id).aigbv
+                  | coins[:right.num_coins].with_output(right.coins_id).aigbv  # noqa: E127, E501
 
         circ <<= relabeler
         biases = tuple(left.coin_biases) + tuple(right.coin_biases)

@@ -85,7 +85,7 @@ def test_loopback_unroll():
     expr = (x + y).with_output('z')
 
     pcirc = C.pcirc(expr) \
-             .loopback({'input': 'x', 'output': 'z', 
+             .loopback({'input': 'x', 'output': 'z',
                         'keep_output': True}) \
              .randomize({'y': {0: 1/2, 1: 1/2}})
 
