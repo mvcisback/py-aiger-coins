@@ -97,7 +97,6 @@ def merge_pcirc_coins(circ, left: PCirc, right: PCirc, coins_id: str):
 
         relabeler = coins[:left.num_coins].with_output(left.coins_id).aigbv \
                   | coins[left.num_coins:].with_output(right.coins_id).aigbv  # noqa: E127, E501
-
         circ <<= relabeler
         biases = tuple(left.coin_biases) + tuple(right.coin_biases)
     return circ, biases
@@ -158,7 +157,6 @@ class PCirc:
     @property
     def omap(self):
         return self.circ.omap.omit([self.coins_id])
-
 
     def assume(self, aigbv_like) -> PCirc:
         """Return Probabilistic Circuit with new assumption over the inputs."""

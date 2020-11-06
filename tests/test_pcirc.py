@@ -2,6 +2,7 @@ from fractions import Fraction
 
 import aiger_bv as BV
 import aiger_discrete
+import funcy as fn
 from bidict import bidict
 
 import aiger_coins as C
@@ -77,6 +78,11 @@ def test_parcompose():
     assert len(inc_xy.outputs) == 2
     assert inc_xy.num_coins == inc_x.num_coins + inc_y.num_coins
     assert inc_xy.num_coins == 3
+
+    outxy = inc_xy.circ({inc_xy.coins_id: 0b011})[0]
+    outx = inc_x.circ({inc_x.coins_id: 0b1})[0]
+    outy = inc_y.circ({inc_y.coins_id: 0b01})[0]
+    assert outxy == fn.merge(outx, outy)
 
 
 def test_loopback_unroll():
