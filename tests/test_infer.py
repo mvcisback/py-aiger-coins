@@ -2,7 +2,6 @@ import pytest
 
 import aiger_bv as BV
 import aiger_discrete
-import funcy as fn
 from bidict import bidict
 
 import aiger_coins as C

@@ -7,7 +7,6 @@ import networkx as nx
 import numpy as np
 
 
-
 FALSE = 0b01
 TRUE = 0b10
 
@@ -29,9 +28,8 @@ def prob(circ, *, log=False, manager=None):
     if len(circ.outputs) != 1:
         raise ValueError("Only support querying probability of single output.")
 
-
     # Make coins different variables for MDD.
-    coins = (BV.uatom(1, f"coin_{i}") for i in range(circ.num_coins))    
+    coins = (BV.uatom(1, f"coin_{i}") for i in range(circ.num_coins))
     coin_blaster = reduce(lambda x, y: x.concat(y), coins)
     coin_blaster = coin_blaster.with_output(circ.coins_id) \
                                .aigbv
@@ -39,7 +37,7 @@ def prob(circ, *, log=False, manager=None):
     #            Seperate coins          MDD expects 1-hot output
     query = (circ.circ << coin_blaster) >> onehot_gadget(circ)
 
-    # View graph of MDD as circuit over LogSumExp    
+    # View graph of MDD as circuit over LogSumExp
     graph = to_nx(to_mdd(query))
     biases = {f"coin_{i}": bias for i, bias in enumerate(circ.coin_biases)}
 
@@ -62,6 +60,6 @@ def prob(circ, *, log=False, manager=None):
 
             # Compute average likelihood in log scale.
             lprobs[node] = np.logaddexp(*(log_biases + kid_lprobs))
-    
+
     result = lprobs[node]
     return result if log else np.exp(result)
