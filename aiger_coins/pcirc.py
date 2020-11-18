@@ -188,7 +188,7 @@ class PCirc:
     def __call__(self, inputs, latches=None):
         inputs = dict(inputs)
         if self.has_coins:
-            inputs[self.coins_id] = sample_coins(self.coin_biases)
+            inputs.setdefault(self.coins_id, sample_coins(self.coin_biases))
         return self.circ(inputs=inputs, latches=latches)
 
     def __getitem__(self, others) -> PCirc:
