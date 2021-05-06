@@ -22,7 +22,7 @@ def onehot_gadget(circ):
 
 def prob(circ, *, log=False):
     """Return probability that the output of circ is True given a valid run."""
-    # Note: circ represents Pr(query & valid).
+    # Note: circ represents Pr(query & valid)
     # Want: Pr(query | valid) = Pr(query & valid) / Pr(valid)
     #
     # Can answer Pr(valid) by creating another circuit such that:
@@ -35,11 +35,12 @@ def prob(circ, *, log=False):
         coin_biases=circ.coin_biases,
         coins_id=circ.coins_id,
     )
-    result = _prob(circ) - _prob(valid_test)
+    result = _lprob(circ) - _lprob(valid_test)
     return result if log else np.exp(result)
 
 
-def _prob(circ):
+def _lprob(circ):
+    # TODO: Use BDD directly.
     from aiger_discrete.mdd import to_mdd
     from mdd.nx import to_nx
 
@@ -60,6 +61,7 @@ def _prob(circ):
 
     # View graph of MDD as circuit over LogSumExp
     graph = to_nx(to_mdd(query))
+
     biases = {f"coin_{i}": bias for i, bias in enumerate(circ.coin_biases)}
 
     lprobs = {}
@@ -69,13 +71,16 @@ def _prob(circ):
             lprobs[node] = 0
         elif val == FALSE:
             lprobs[node] = -float('inf')
-        elif graph.out_degree(node) == 1:
-            child, *_ = graph.neighbors(node)
-            lprobs[node] = lprobs[child]
+            false_node = node
         else:
-            left, right = graph.neighbors(node)
+            if graph.out_degree(node) == 1:
+                left, *_ = graph.neighbors(node)
+                right = false_node
+            else:
+                left, right = graph.neighbors(node)
+
             # Swap if polarity switched.
-            if graph.edges[node, right]['label']({val: True})[0]:
+            if not graph.edges[node, left]['label']({val: True})[0]:
                 right, left = left, right
 
             bias = float(biases[val])
