@@ -1,6 +1,5 @@
 from functools import reduce
 
-import attr
 import aiger_bv as BV
 import aiger_discrete as D
 import funcy as fn
@@ -22,9 +21,10 @@ def onehot_gadget(circ):
 
 
 def prob(circ, *, log=False):
+    """Return probability that the output of circ is True given a valid run."""
     # Note: circ represents Pr(query & valid).
     # Want: Pr(query | valid) = Pr(query & valid) / Pr(valid)
-    # 
+    #
     # Can answer Pr(valid) by creating another circuit such that:
     #
     #      query' = valid, and valid' = True.
