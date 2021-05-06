@@ -1,9 +1,13 @@
 from functools import reduce
 
+import attr
 import aiger_bv as BV
+import aiger_discrete as D
 import funcy as fn
 import networkx as nx
 import numpy as np
+
+import aiger_coins as C
 
 
 FALSE = 0b01
@@ -17,7 +21,25 @@ def onehot_gadget(circ):
     return BV.ite(sat, true, false).aigbv
 
 
-def prob(circ, *, log=False, manager=None):
+def prob(circ, *, log=False):
+    # Note: circ represents Pr(query & valid).
+    # Want: Pr(query | valid) = Pr(query & valid) / Pr(valid)
+    # 
+    # Can answer Pr(valid) by creating another circuit such that:
+    #
+    #      query' = valid, and valid' = True.
+    #
+    valid_test = circ.circ.aigbv.cone(circ.circ.valid_id)
+    valid_test = C.PCirc(
+        circ=D.from_aigbv(valid_test),
+        coin_biases=circ.coin_biases,
+        coins_id=circ.coins_id,
+    )
+    result = _prob(circ) - _prob(valid_test)
+    return result if log else np.exp(result)
+
+
+def _prob(circ):
     from aiger_discrete.mdd import to_mdd
     from mdd.nx import to_nx
 
@@ -63,8 +85,7 @@ def prob(circ, *, log=False, manager=None):
             # Compute average likelihood in log scale.
             lprobs[node] = np.logaddexp(*(log_biases + kid_lprobs))
 
-    result = lprobs[node]
-    return result if log else np.exp(result)
+    return lprobs[node]
 
 
 def coins_preimage(pcirc, *,
