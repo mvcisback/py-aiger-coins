@@ -47,13 +47,16 @@ def prob(circ, *, log=False, manager=None):
             lprobs[node] = 0
         elif val == FALSE:
             lprobs[node] = -float('inf')
+        elif graph.out_degree(node) == 1:
+            child, *_ = graph.neighbors(node)
+            lprobs[node] = lprobs[child]
         else:
             left, right = graph.neighbors(node)
             # Swap if polarity switched.
             if graph.edges[node, right]['label']({val: True})[0]:
                 right, left = left, right
 
-            bias = biases[val]
+            bias = float(biases[val])
             log_biases = np.log(np.array([bias, 1 - bias]))
             kid_lprobs = np.array([lprobs[left], lprobs[right]])
 
