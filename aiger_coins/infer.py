@@ -64,18 +64,17 @@ def _lprob(circ):
 
     biases = {f"coin_{i}": bias for i, bias in enumerate(circ.coin_biases)}
 
-    lprobs = {}
+    lprobs = {'DUMMY': -float('inf')}
     for node in nx.topological_sort(graph.reverse()):
         val = graph.nodes[node]['label']
         if val == TRUE:
             lprobs[node] = 0
         elif val == FALSE:
             lprobs[node] = -float('inf')
-            false_node = node
         else:
             if graph.out_degree(node) == 1:
                 left, *_ = graph.neighbors(node)
-                right = false_node
+                right = 'DUMMY'
             else:
                 left, right = graph.neighbors(node)
 
