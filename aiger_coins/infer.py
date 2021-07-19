@@ -1,27 +1,22 @@
 from functools import reduce
 
 import aiger_bv as BV
-import aiger_discrete as D
-import funcy as fn
 import networkx as nx
 import numpy as np
-
-import aiger_coins as C
-
-
-FALSE = 0b01
-TRUE = 0b10
-
-
-def onehot_gadget(circ):
-    output = fn.first(circ.outputs)
-    sat = BV.uatom(1, output)
-    false, true = BV.uatom(2, FALSE), BV.uatom(2, TRUE)
-    return BV.ite(sat, true, false).aigbv
 
 
 def prob(circ, *, log=False):
     """Return probability that the output of circ is True given a valid run."""
+    # Validate Input
+    if circ.inputs:
+        raise ValueError("All inputs must be randomized.")
+
+    if len(circ.outputs) != 1:
+        raise ValueError("Only support querying probability of single output.")
+    output, *_ = circ.outputs
+    if len(circ.omap[output]) != 1:
+        raise ValueError("Only support single bit output queries.")
+
     # Note: circ represents Pr(query & valid)
     # Want: Pr(query | valid) = Pr(query & valid) / Pr(valid)
     #
@@ -29,48 +24,42 @@ def prob(circ, *, log=False):
     #
     #      query' = valid, and valid' = True.
     #
-    valid_test = circ.circ.aigbv.cone(circ.circ.valid_id)
-    valid_test = C.PCirc(
-        circ=D.from_aigbv(valid_test),
-        coin_biases=circ.coin_biases,
-        coins_id=circ.coins_id,
-    )
-    result = _lprob(circ) - _lprob(valid_test)
+    valid_id = circ.circ.valid_id
+    valid_test = circ.circ.aigbv.cone(valid_id)
+    query_and_valid_test = (BV.uatom(1, output) & BV.uatom(1, valid_id)).aigbv
+    query_and_valid_test <<= circ.circ.aigbv
+    biases = circ.coin_biases
+
+    result = _lprob(query_and_valid_test, biases)
+    result -= _lprob(valid_test, biases)
     return result if log else np.exp(result)
 
 
-def _lprob(circ):
-    # TODO: Use BDD directly.
-    from aiger_discrete.mdd import to_mdd
-    from mdd.nx import to_nx
+def _lprob(circ, biases):
+    # Convert circuit into labeled DAG based on BDD.
+    from dfa import dfa2dict
+    from bdd2dfa import to_dfa
+    from aiger_bdd import to_bdd
 
-    if circ.inputs:
-        raise ValueError("All inputs must be randomized.")
+    bdd, *_ = to_bdd(circ, renamer=lambda _, x: x)
+    dag, root = dfa2dict(to_dfa(bdd, qdd=False))
+    graph = nx.DiGraph()
+    for node, (label, transitions) in dag.items():
+        label = node.label()
+        graph.add_node(node, label=label)
 
-    if len(circ.outputs) != 1:
-        raise ValueError("Only support querying probability of single output.")
+        if isinstance(label, bool):
+            continue
 
-    # Make coins different variables for MDD.
-    coins = (BV.uatom(1, f"coin_{i}") for i in range(circ.num_coins))
-    coin_blaster = reduce(lambda x, y: x.concat(y), coins)
-    coin_blaster = coin_blaster.with_output(circ.coins_id) \
-                               .aigbv
-
-    #            Seperate coins          MDD expects 1-hot output
-    query = (circ.circ << coin_blaster) >> onehot_gadget(circ)
+        for token, node2 in transitions.items():
+            graph.add_edge(node, node2, label=token)
 
     # View graph of MDD as circuit over LogSumExp
-    graph = to_nx(to_mdd(query))
-
-    biases = {f"coin_{i}": bias for i, bias in enumerate(circ.coin_biases)}
-
     lprobs = {'DUMMY': -float('inf')}
     for node in nx.topological_sort(graph.reverse()):
         val = graph.nodes[node]['label']
-        if val == TRUE:
-            lprobs[node] = 0
-        elif val == FALSE:
-            lprobs[node] = -float('inf')
+        if isinstance(val, bool):
+            lprobs[node] = 0 if val else -float('inf')
         else:
             if graph.out_degree(node) == 1:
                 left, *_ = graph.neighbors(node)
@@ -79,10 +68,11 @@ def _lprob(circ):
                 left, right = graph.neighbors(node)
 
             # Swap if polarity switched.
-            if not graph.edges[node, left]['label']({val: True})[0]:
+            if not graph.edges[node, left]['label']:
                 right, left = left, right
 
-            bias = float(biases[val])
+            _, idx = BV.aigbv.unpack_name(val)
+            bias = float(biases[idx])
             log_biases = np.log(np.array([bias, 1 - bias]))
             kid_lprobs = np.array([lprobs[left], lprobs[right]])
 
