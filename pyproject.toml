@@ -11,8 +11,8 @@ packages = [
 ]
 
 [tool.poetry.dependencies]
-python = "^3.7"
-attrs = "^20.0.0"
+python = "^3.9"
+attrs = "^21.0.0"
 py-aiger = "^6.1.1"
 py-aiger-bv = "^4.4.0"
 funcy = "^1.13"
@@ -23,7 +23,6 @@ mdd = {version = "^0.3.4", optional = true}
 numpy = {version = "^1.19.4", optional = true}
 
 [tool.poetry.dev-dependencies]
-codecov = "^2.0"
 hypothesis = "^5.0.0"
 py-aiger-bdd = "^3.0.0"
 pytest-cov = "^2.7"
