@@ -10,4 +10,4 @@ steps:
   commands:
   - pip install poetry
   - poetry install
-  - poetry run pytest -nauto
+  - poetry run pytest
