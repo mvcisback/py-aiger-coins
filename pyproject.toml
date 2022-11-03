@@ -30,6 +30,8 @@ python-sat = "^0.1.6-alpha.9"
 py-aiger-sat = "^3.0.4"
 mdd = "^0.3.4"
 numpy = "^1.19.4"
+pytest = "^7.2.0"
+parsimonious = "^0.10.0"
 
 
 [tool.poetry.extras]
